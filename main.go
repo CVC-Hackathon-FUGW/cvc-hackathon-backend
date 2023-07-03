@@ -8,6 +8,7 @@ import (
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/controllers"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -24,6 +25,8 @@ var (
 )
 
 func init() {
+	err := godotenv.Load()
+
 	ctx = context.TODO()
 
 	mongoconn := options.Client().ApplyURI("mongodb://localhost:27017")
