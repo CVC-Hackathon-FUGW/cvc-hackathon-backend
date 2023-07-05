@@ -12,7 +12,7 @@ type LoanController struct {
 	LoanService services.LoanService
 }
 
-func NewLoan(loanservice services.LoanService) LoanController {
+func NewLoanController(loanservice services.LoanService) LoanController {
 	return LoanController{
 		LoanService: loanservice,
 	}
@@ -57,14 +57,14 @@ func (uc *LoanController) UpdateLoan(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	Loanupdate, err := uc.LoanService.Update(&loan)
+	loanupdate, err := uc.LoanService.Update(&loan)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    Loanupdate,
+		"data":    loanupdate,
 	})
 }
 

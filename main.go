@@ -27,10 +27,14 @@ var (
 	dspools *datastore.DatastorePoolMG
 	pc      controllers.PoolController
 
-	loans       *mongo.Collection
-	dsloans     *datastore.DatastoreLoanMG
-	ls          services.LoanService
-	lc          controllers.LoanController
+	loans   *mongo.Collection
+	dsloans *datastore.DatastoreLoanMG
+	lc      controllers.LoanController
+
+	lenders   *mongo.Collection
+	dslenders *datastore.DatastoreLenderMG
+	lenc      controllers.LenderController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -64,7 +68,12 @@ func init() {
 	loans = mongoclient.Database("hackathon").Collection("loans")
 	dsloans = datastore.NewDatastoreLoanMG(loans)
 	ls := services.NewLoanService(ctx, dsloans)
-	lc = controllers.NewLoan(*ls)
+	lc = controllers.NewLoanController(*ls)
+
+	lenders = mongoclient.Database("hackathon").Collection("lenders")
+	dslenders = datastore.NewDatastoreLenderMG(lenders)
+	lens := services.NewLenderService(ctx, dslenders)
+	lenc = controllers.NewLenderController(*lens)
 
 	server = gin.Default()
 }
@@ -75,7 +84,8 @@ func main() {
 	basepath := server.Group("/v1")
 	uc.RegisterUserRoutes(basepath)
 	pc.RegisterRoutes(basepath)
-
+	lc.RegisterRoutes(basepath)
+	lenc.RegisterRoutes(basepath)
 	log.Fatal(server.Run(":9090"))
 
 }

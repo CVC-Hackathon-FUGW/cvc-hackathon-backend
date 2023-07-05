@@ -17,3 +17,19 @@ type DatastoreLoan interface {
 	Update(ctx context.Context, params *Loan) (*Loan, error)
 	Delete(ctx context.Context, params *string) error
 }
+
+type DatastoreLender interface {
+	Create(ctx context.Context, params *Lender) (*Lender, error)
+	FindByID(ctx context.Context, id *string) (*Lender, error)
+	List(ctx context.Context) ([]*Lender, error)
+	Update(ctx context.Context, params *Lender) (*Lender, error)
+	Delete(ctx context.Context, params *string) error
+}
+
+type DatastroreBrrower interface {
+	Create(ctx context.Context, params *Borrower) (*Borrower, error)
+	FindByID(ctx context.Context, id *string) (*Borrower, error)
+	List(ctx context.Context) ([]*Borrower, error)
+	Update(ctx context.Context, params *Borrower) (*Borrower, error)
+	Delete(ctx context.Context, params *string) error
+}
