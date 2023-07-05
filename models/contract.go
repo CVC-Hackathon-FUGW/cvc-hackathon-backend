@@ -26,7 +26,7 @@ type DatastoreLender interface {
 	Delete(ctx context.Context, params *string) error
 }
 
-type DatastroreBrrower interface {
+type DatastoreBorrower interface {
 	Create(ctx context.Context, params *Borrower) (*Borrower, error)
 	FindByID(ctx context.Context, id *string) (*Borrower, error)
 	List(ctx context.Context) ([]*Borrower, error)

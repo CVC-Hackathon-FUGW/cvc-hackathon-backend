@@ -35,6 +35,10 @@ var (
 	dslenders *datastore.DatastoreLenderMG
 	lenc      controllers.LenderController
 
+	borrowers   *mongo.Collection
+	dsborrowers *datastore.DatastoreBorrowerMG
+	borc        controllers.BorrowerController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -75,6 +79,11 @@ func init() {
 	lens := services.NewLenderService(ctx, dslenders)
 	lenc = controllers.NewLenderController(*lens)
 
+	borrowers = mongoclient.Database("hackathon").Collection("borrowers")
+	dsborrowers = datastore.NewDatastoreBorrowerMG(borrowers)
+	bors := services.NewBorrowerService(ctx, dsborrowers)
+	borc = controllers.NewBorrowerController(*bors)
+
 	server = gin.Default()
 }
 
@@ -86,6 +95,7 @@ func main() {
 	pc.RegisterRoutes(basepath)
 	lc.RegisterRoutes(basepath)
 	lenc.RegisterRoutes(basepath)
+	borc.RegisterRoutes(basepath)
 	log.Fatal(server.Run(":9090"))
 
 }
