@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/controllers"
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/datastore"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -15,11 +16,17 @@ import (
 )
 
 var (
-	server      *gin.Engine
-	us          services.UserService
-	uc          controllers.UserController
-	ctx         context.Context
-	userc       *mongo.Collection
+	server *gin.Engine
+
+	us    services.UserService
+	uc    controllers.UserController
+	ctx   context.Context
+	userc *mongo.Collection
+
+	pools       *mongo.Collection
+	dspools     *datastore.DatastorePoolMG
+	ps          services.PoolService
+	pc          controllers.PoolController
 	mongoclient *mongo.Client
 	err         error
 )
@@ -41,9 +48,14 @@ func init() {
 
 	fmt.Println("mongo connection established")
 
-	userc = mongoclient.Database("userdb").Collection("users")
+	userc = mongoclient.Database("hackathon").Collection("users")
 	us = services.NewUserService(userc, ctx)
 	uc = controllers.NewUser(us)
+
+	pools = mongoclient.Database("hackathon").Collection("pools")
+	dspools = datastore.NewDatastorePoolMG(pools)
+	ps := services.NewPoolService(ctx, dspools)
+	pc = controllers.NewPool(*ps)
 
 	server = gin.Default()
 }
@@ -53,6 +65,7 @@ func main() {
 
 	basepath := server.Group("/v1")
 	uc.RegisterUserRoutes(basepath)
+	pc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run(":9090"))
 

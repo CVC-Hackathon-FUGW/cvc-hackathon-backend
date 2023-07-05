@@ -78,7 +78,7 @@ func (uc *PoolController) DeletePool(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
-func (uc *PoolController) RegisterUserRoutes(rg *gin.RouterGroup) {
+func (uc *PoolController) RegisterRoutes(rg *gin.RouterGroup) {
 	userroute := rg.Group("/pools")
 	userroute.POST("", uc.CreatePool)
 	userroute.GET("/:id", uc.GetPool)

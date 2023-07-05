@@ -14,6 +14,10 @@ type DatastorePoolMG struct {
 	poolCollection *mongo.Collection
 }
 
+func NewDatastorePoolMG(poolCollection *mongo.Collection) *DatastorePoolMG {
+	return &DatastorePoolMG{poolCollection}
+}
+
 var _ models.DatastorePool = (*DatastorePoolMG)(nil)
 
 func (ds DatastorePoolMG) Create(ctx context.Context, params *models.Pool) (*models.Pool, error) {
@@ -60,9 +64,9 @@ func (ds DatastorePoolMG) List(ctx context.Context) ([]*models.Pool, error) {
 }
 
 func (ds DatastorePoolMG) Update(ctx context.Context, params *models.Pool) (*models.Pool, error) {
-	filter := bson.D{primitive.E{Key: "pool_id", Value: params.ID}}
+	filter := bson.D{primitive.E{Key: "pool_id", Value: params.PoolId}}
 	update := bson.D{
-		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "pool_id", Value: params.ID},
+		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "pool_id", Value: params.PoolId},
 			primitive.E{Key: "total_pool_amount", Value: params.TotalPoolAmount},
 			primitive.E{Key: "token_address", Value: params.TokenAddress},
 			primitive.E{Key: "apy", Value: params.APY},
