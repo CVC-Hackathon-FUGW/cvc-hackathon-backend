@@ -43,7 +43,7 @@ func init() {
 
 	userc = mongoclient.Database("userdb").Collection("users")
 	us = services.NewUserService(userc, ctx)
-	uc = controllers.New(us)
+	uc = controllers.NewUser(us)
 
 	server = gin.Default()
 }
