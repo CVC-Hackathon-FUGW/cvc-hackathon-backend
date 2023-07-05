@@ -23,10 +23,14 @@ var (
 	ctx   context.Context
 	userc *mongo.Collection
 
-	pools       *mongo.Collection
-	dspools     *datastore.DatastorePoolMG
-	ps          services.PoolService
-	pc          controllers.PoolController
+	pools   *mongo.Collection
+	dspools *datastore.DatastorePoolMG
+	pc      controllers.PoolController
+
+	loans       *mongo.Collection
+	dsloans     *datastore.DatastoreLoanMG
+	ls          services.LoanService
+	lc          controllers.LoanController
 	mongoclient *mongo.Client
 	err         error
 )
@@ -56,6 +60,11 @@ func init() {
 	dspools = datastore.NewDatastorePoolMG(pools)
 	ps := services.NewPoolService(ctx, dspools)
 	pc = controllers.NewPool(*ps)
+
+	loans = mongoclient.Database("hackathon").Collection("loans")
+	dsloans = datastore.NewDatastoreLoanMG(loans)
+	ls := services.NewLoanService(ctx, dsloans)
+	lc = controllers.NewLoan(*ls)
 
 	server = gin.Default()
 }
