@@ -2,8 +2,10 @@ package services
 
 import (
 	"context"
+	"errors"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
+	utils "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg"
 )
 
 type LenderService struct {
@@ -18,9 +20,14 @@ func NewLenderService(ctx context.Context, datastoreLender models.DatastoreLende
 	}
 }
 
-func (p *LenderService) Create(Lender *models.Lender) error {
+func (p *LenderService) Create(lender *models.Lender) error {
 	ctx := p.ctx
-	_, err := p.datastoreLender.Create(ctx, Lender)
+
+	if ok := utils.ValidateAddress(lender.WalletAddress); !ok {
+		return errors.New("invalid wallet address")
+	}
+
+	_, err := p.datastoreLender.Create(ctx, lender)
 	return err
 }
 
@@ -38,6 +45,12 @@ func (p *LenderService) List() ([]*models.Lender, error) {
 
 func (p *LenderService) Update(params *models.Lender) (*models.Lender, error) {
 	ctx := p.ctx
+
+	if params.WalletAddress != "" {
+		if ok := utils.ValidateAddress(params.WalletAddress); !ok {
+			return nil, errors.New("invalid wallet address")
+		}
+	}
 	item, err := p.datastoreLender.Update(ctx, params)
 	return item, err
 }

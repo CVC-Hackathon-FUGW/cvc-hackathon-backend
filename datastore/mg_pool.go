@@ -72,6 +72,7 @@ func (ds DatastorePoolMG) Update(ctx context.Context, params *models.Pool) (*mod
 			primitive.E{Key: "apy", Value: params.APY},
 			primitive.E{Key: "duration", Value: params.Duration},
 			primitive.E{Key: "state", Value: params.State},
+			primitive.E{Key: "image", Value: params.Image},
 		}}}
 
 	var poolUpdated *models.Pool

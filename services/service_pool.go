@@ -2,8 +2,14 @@ package services
 
 import (
 	"context"
+	"errors"
+	"os"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
+	utils "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg"
+	aws_pkg "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg/aws"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 )
 
 type PoolService struct {
@@ -20,12 +26,18 @@ func NewPoolService(ctx context.Context, datastorePool models.DatastorePool) *Po
 
 func (p *PoolService) Create(pool *models.Pool) error {
 	ctx := p.ctx
+
+	if ok := utils.ValidateAddress(pool.TokenAddress); !ok {
+		return errors.New("invalid token address")
+	}
+
 	_, err := p.dataStorePool.Create(ctx, pool)
 	return err
 }
 
 func (p *PoolService) Show(id *string) (*models.Pool, error) {
 	ctx := p.ctx
+
 	item, err := p.dataStorePool.FindByID(ctx, id)
 	return item, err
 }
@@ -38,6 +50,13 @@ func (p *PoolService) List() ([]*models.Pool, error) {
 
 func (p *PoolService) Update(params *models.Pool) (*models.Pool, error) {
 	ctx := p.ctx
+
+	if params.TokenAddress != "" {
+		if ok := utils.ValidateAddress(params.TokenAddress); !ok {
+			return nil, errors.New("invalid token address")
+		}
+	}
+
 	item, err := p.dataStorePool.Update(ctx, params)
 	return item, err
 }
@@ -46,4 +65,19 @@ func (p *PoolService) Delete(id *string) error {
 	ctx := p.ctx
 	err := p.dataStorePool.Delete(ctx, id)
 	return err
+}
+
+func (p *PoolService) UploadFiles(uploadFileDir string) error {
+
+	session, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_S3_REGION"))})
+	if err != nil {
+		return err
+	}
+
+	// Upload Files
+	err = aws_pkg.UploadFile(session, uploadFileDir)
+	if err != nil {
+		return err
+	}
+	return nil
 }

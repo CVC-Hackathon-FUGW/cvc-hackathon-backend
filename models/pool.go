@@ -7,4 +7,5 @@ type Pool struct {
 	APY             int    `bson:"apy" json:"apy"`
 	Duration        int    `bson:"duration" json:"duration"`
 	State           bool   `bson:"state" json:"state"`
+	Image           string `bson:"image" json:"image"`
 }
