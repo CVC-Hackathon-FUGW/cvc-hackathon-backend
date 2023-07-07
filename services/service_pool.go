@@ -32,6 +32,12 @@ func (p *PoolService) Create(pool *models.Pool) error {
 	}
 
 	_, err := p.dataStorePool.Create(ctx, pool)
+
+	err = p.UploadFiles(pool.Image)
+	if err != nil {
+		return err
+	}
+
 	return err
 }
 
