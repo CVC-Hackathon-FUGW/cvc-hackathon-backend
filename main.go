@@ -40,6 +40,10 @@ var (
 	dsborrowers *datastore.DatastoreBorrowerMG
 	borc        controllers.BorrowerController
 
+	marketItems  *mongo.Collection
+	dsMarketItem *datastore.DatastoreMarketItemMG
+	marketItemc  controllers.MarketItemController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -85,6 +89,11 @@ func init() {
 	bors := services.NewBorrowerService(ctx, dsborrowers)
 	borc = controllers.NewBorrowerController(*bors)
 
+	marketItems = mongoclient.Database("hackathon").Collection("marketItems")
+	dsMarketItem = datastore.NewDatastoreMarketItemMG(marketItems)
+	marketItemService := services.NewMarketItemService(ctx, dsMarketItem)
+	marketItemc = controllers.NewMarketItemController(*marketItemService)
+
 	server = gin.Default()
 }
 
@@ -92,11 +101,13 @@ func main() {
 	defer mongoclient.Disconnect(ctx)
 
 	basepath := server.Group("/v1")
+	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
 	uc.RegisterUserRoutes(basepath)
 	pc.RegisterRoutes(basepath)
 	lc.RegisterRoutes(basepath)
 	lenc.RegisterRoutes(basepath)
 	borc.RegisterRoutes(basepath)
-	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
+	marketItemc.RegisterRoutes(basepath)
+
 	log.Fatal(server.Run(":9090"))
 }

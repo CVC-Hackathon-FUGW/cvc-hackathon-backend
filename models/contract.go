@@ -33,3 +33,11 @@ type DatastoreBorrower interface {
 	Update(ctx context.Context, params *Borrower) (*Borrower, error)
 	Delete(ctx context.Context, params *string) error
 }
+
+type DatastoreMarketItem interface {
+	Create(ctx context.Context, params *MarketItem) (*MarketItem, error)
+	FindByID(ctx context.Context, id *string) (*MarketItem, error)
+	List(ctx context.Context) ([]*MarketItem, error)
+	Update(ctx context.Context, params *MarketItem) (*MarketItem, error)
+	Delete(ctx context.Context, params *string) error
+}
