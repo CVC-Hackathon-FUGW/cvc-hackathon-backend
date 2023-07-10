@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/controllers"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/datastore"
@@ -96,5 +97,6 @@ func main() {
 	lc.RegisterRoutes(basepath)
 	lenc.RegisterRoutes(basepath)
 	borc.RegisterRoutes(basepath)
+	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
 	log.Fatal(server.Run(":9090"))
 }
