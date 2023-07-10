@@ -97,5 +97,4 @@ func main() {
 	lenc.RegisterRoutes(basepath)
 	borc.RegisterRoutes(basepath)
 	log.Fatal(server.Run(":9090"))
-
 }
