@@ -86,7 +86,7 @@ func (ds DatastoreMarketItemMG) Update(ctx context.Context, params *models.Marke
 }
 
 func (ds DatastoreMarketItemMG) Delete(ctx context.Context, id *string) error {
-	filter := bson.D{primitive.E{Key: "MarketItem_id", Value: id}}
+	filter := bson.D{primitive.E{Key: "item_id", Value: id}}
 	result, _ := ds.MarketItemCollection.DeleteOne(ctx, filter)
 	if result.DeletedCount != 1 {
 		return errors.New("no matched document found for delete")
