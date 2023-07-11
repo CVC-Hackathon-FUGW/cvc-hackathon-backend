@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	utils "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg"
 )
@@ -65,5 +66,11 @@ func (p *LoanService) Delete(id *string) error {
 func (p *LoanService) MaxAmount(id *string) ([]*models.Loan, error) {
 	ctx := p.ctx
 	items, err := p.datastoreLoan.MaxAmount(ctx, id)
+	return items, err
+}
+
+func (p *LoanService) CountLoans(id *string) (*enum.CountLoans, error) {
+	ctx := p.ctx
+	items, err := p.datastoreLoan.CountLoans(ctx, id)
 	return items, err
 }

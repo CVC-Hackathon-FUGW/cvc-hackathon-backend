@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -141,4 +142,39 @@ func (ds DatastoreLoanMG) MaxAmount(ctx context.Context, poolId *string) ([]*mod
 		return nil, errors.New("documents not found")
 	}
 	return loans, nil
+}
+
+func (ds DatastoreLoanMG) CountLoans(ctx context.Context, poolId *string) (*enum.CountLoans, error) {
+	cursor, err := ds.loanCollection.Find(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+
+	count := enum.CountLoans{
+		TotalLoanInPool: 0,
+		TotalLoanGot:    0,
+	}
+
+	for cursor.Next(ctx) {
+		var loan models.Loan
+		err := cursor.Decode(&loan)
+		if err != nil {
+			return nil, err
+		}
+		if strconv.Itoa(loan.PoolId) != *poolId {
+			continue
+		}
+		if loan.State {
+			count.TotalLoanGot++
+		}
+		count.TotalLoanInPool++
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	return &count, nil
 }

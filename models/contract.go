@@ -21,6 +21,7 @@ type DatastoreLoan interface {
 	Update(ctx context.Context, params *Loan) (*Loan, error)
 	Delete(ctx context.Context, params *string) error
 	MaxAmount(ctx context.Context, poolId *string) ([]*Loan, error)
+	CountLoans(ctx context.Context, poolId *string) (*enum.CountLoans, error)
 }
 
 type DatastoreLender interface {
