@@ -30,7 +30,7 @@ func (ds DatastoreMarketCollectionMG) Create(ctx context.Context, params *models
 
 func (ds DatastoreMarketCollectionMG) FindByID(ctx context.Context, id *string) (*models.MarketCollection, error) {
 	var MarketCollection *models.MarketCollection
-	query := bson.D{bson.E{Key: "item_id", Value: id}}
+	query := bson.D{bson.E{Key: "collection_id", Value: id}}
 	err := ds.MarketCollectionCollection.FindOne(ctx, query).Decode(&MarketCollection)
 	return MarketCollection, err
 }
@@ -80,7 +80,7 @@ func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models
 }
 
 func (ds DatastoreMarketCollectionMG) Delete(ctx context.Context, id *string) error {
-	filter := bson.D{primitive.E{Key: "MarketCollection_id", Value: id}}
+	filter := bson.D{primitive.E{Key: "collection_id", Value: id}}
 	result, _ := ds.MarketCollectionCollection.DeleteOne(ctx, filter)
 	if result.DeletedCount != 1 {
 		return errors.New("no matched document found for delete")
