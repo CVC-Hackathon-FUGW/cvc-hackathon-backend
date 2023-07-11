@@ -63,7 +63,7 @@ func (ds DatastoreMarketCollectionMG) List(ctx context.Context) ([]*models.Marke
 }
 
 func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models.MarketCollection) (*models.MarketCollection, error) {
-	filter := bson.D{primitive.E{Key: "item_id", Value: params.CollectionId}}
+	filter := bson.D{primitive.E{Key: "collection_id", Value: params.CollectionId}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "item_id", Value: params.CollectionId},
 			primitive.E{Key: "token_address", Value: params.TokenAddress},
