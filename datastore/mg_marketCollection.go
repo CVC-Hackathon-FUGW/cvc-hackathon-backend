@@ -67,6 +67,7 @@ func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "item_id", Value: params.CollectionId},
 			primitive.E{Key: "token_address", Value: params.TokenAddress},
+			primitive.E{Key: "collection_name", Value: params.CollectionName},
 			primitive.E{Key: "image", Value: params.Image},
 		}}}
 

@@ -69,6 +69,7 @@ func (ds DatastorePoolMG) Update(ctx context.Context, params *models.Pool) (*mod
 		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "pool_id", Value: params.PoolId},
 			primitive.E{Key: "total_pool_amount", Value: params.TotalPoolAmount},
 			primitive.E{Key: "token_address", Value: params.TokenAddress},
+			primitive.E{Key: "collection_name", Value: params.CollectionName},
 			primitive.E{Key: "apy", Value: params.APY},
 			primitive.E{Key: "duration", Value: params.Duration},
 			primitive.E{Key: "state", Value: params.State},
