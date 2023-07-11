@@ -78,6 +78,19 @@ func (uc *LoanController) DeleteLoan(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
+func (uc *LoanController) MaxAMount(ctx *gin.Context) {
+	var pool_id string = ctx.Param("id")
+	loan, err := uc.LoanService.MaxAmount(&pool_id)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "success",
+		"data":    loan,
+	})
+}
+
 func (uc *LoanController) RegisterRoutes(rg *gin.RouterGroup) {
 	userroute := rg.Group("/loans")
 	userroute.POST("", uc.CreateLoan)
@@ -85,4 +98,6 @@ func (uc *LoanController) RegisterRoutes(rg *gin.RouterGroup) {
 	userroute.GET("", uc.List)
 	userroute.PATCH("", uc.UpdateLoan)
 	userroute.DELETE("/:id", uc.DeleteLoan)
+	userroute.GET("/pool/:id/max-amount", uc.MaxAMount)
+
 }

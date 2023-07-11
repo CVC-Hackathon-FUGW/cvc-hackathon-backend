@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
@@ -101,4 +102,43 @@ func (ds DatastoreLoanMG) Delete(ctx context.Context, id *string) error {
 		return errors.New("no matched document found for delete")
 	}
 	return nil
+}
+
+func (ds DatastoreLoanMG) MaxAmount(ctx context.Context, poolId *string) ([]*models.Loan, error) {
+	var loans []*models.Loan
+	cursor, err := ds.loanCollection.Find(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+
+	max := -1
+	for cursor.Next(ctx) {
+		var loan models.Loan
+		err := cursor.Decode(&loan)
+		if err != nil {
+			return nil, err
+		}
+		if strconv.Itoa(loan.PoolId) != *poolId {
+			continue
+		}
+
+		if loan.Amount > max {
+			loans = []*models.Loan{&loan}
+			max = loan.Amount
+		}
+		if loan.Amount == max {
+			loans = append(loans, &loan)
+		}
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	if len(loans) == 0 {
+		return nil, errors.New("documents not found")
+	}
+	return loans, nil
 }

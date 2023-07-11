@@ -61,3 +61,9 @@ func (p *LoanService) Delete(id *string) error {
 	err := p.datastoreLoan.Delete(ctx, id)
 	return err
 }
+
+func (p *LoanService) MaxAmount(id *string) ([]*models.Loan, error) {
+	ctx := p.ctx
+	items, err := p.datastoreLoan.MaxAmount(ctx, id)
+	return items, err
+}
