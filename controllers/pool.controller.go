@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
 	"github.com/gin-gonic/gin"
@@ -43,7 +44,12 @@ func (uc *PoolController) GetPool(ctx *gin.Context) {
 }
 
 func (uc *PoolController) List(ctx *gin.Context) {
-	pools, err := uc.PoolService.List()
+	params := enum.PoolParams{
+		NamePool:       ctx.Query("name"),
+		NameCollection: ctx.Query("collection"),
+	}
+
+	pools, err := uc.PoolService.List(params)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return

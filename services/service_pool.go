@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	utils "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg"
 	aws_pkg "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg/aws"
@@ -48,9 +49,9 @@ func (p *PoolService) Show(id *string) (*models.Pool, error) {
 	return item, err
 }
 
-func (p *PoolService) List() ([]*models.Pool, error) {
+func (p *PoolService) List(params enum.PoolParams) ([]*models.Pool, error) {
 	ctx := p.ctx
-	items, err := p.dataStorePool.List(ctx)
+	items, err := p.dataStorePool.List(ctx, params)
 	return items, err
 }
 

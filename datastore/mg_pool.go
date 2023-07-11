@@ -3,7 +3,9 @@ package datastore
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -42,9 +44,15 @@ func (ds DatastorePoolMG) FindByID(ctx context.Context, id *string) (*models.Poo
 	return pool, err
 }
 
-func (ds DatastorePoolMG) List(ctx context.Context) ([]*models.Pool, error) {
+func (ds DatastorePoolMG) List(ctx context.Context, params enum.PoolParams) ([]*models.Pool, error) {
 	var pools []*models.Pool
-	cursor, err := ds.poolCollection.Find(ctx, bson.D{{}})
+	filter := bson.M{}
+	if params.NameCollection != "" {
+		filter = bson.M{"collection_id": fmt.Sprintf("/%s/", params.NameCollection)}
+	}
+	fmt.Println("filter", filter)
+
+	cursor, err := ds.poolCollection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
