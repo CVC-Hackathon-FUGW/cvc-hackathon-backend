@@ -117,6 +117,6 @@ func main() {
 	lenc.RegisterRoutes(basepath)
 	borc.RegisterRoutes(basepath)
 	marketItemc.RegisterRoutes(basepath)
-
+	marketCollectionc.RegisterRoutes(basepath)
 	log.Fatal(server.Run(":9090"))
 }
