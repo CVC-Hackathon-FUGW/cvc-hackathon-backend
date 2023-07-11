@@ -11,7 +11,7 @@ import (
 )
 
 type DatastoreMarketItemMG struct {
-	MarketItemCollection *mongo.Collection
+	marketItemCollection *mongo.Collection
 }
 
 func NewDatastoreMarketItemMG(MarketItemCollection *mongo.Collection) *DatastoreMarketItemMG {
@@ -21,7 +21,13 @@ func NewDatastoreMarketItemMG(MarketItemCollection *mongo.Collection) *Datastore
 var _ models.DatastoreMarketItem = (*DatastoreMarketItemMG)(nil)
 
 func (ds DatastoreMarketItemMG) Create(ctx context.Context, params *models.MarketItem) (*models.MarketItem, error) {
-	_, err := ds.MarketItemCollection.InsertOne(ctx, params)
+	count, err := ds.marketItemCollection.CountDocuments(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+	params.ItemId = int(count) + 1
+
+	_, err = ds.marketItemCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
 	}
@@ -32,13 +38,13 @@ func (ds DatastoreMarketItemMG) Create(ctx context.Context, params *models.Marke
 func (ds DatastoreMarketItemMG) FindByID(ctx context.Context, id *string) (*models.MarketItem, error) {
 	var marketItem *models.MarketItem
 	query := bson.D{bson.E{Key: "item_id", Value: id}}
-	err := ds.MarketItemCollection.FindOne(ctx, query).Decode(&marketItem)
+	err := ds.marketItemCollection.FindOne(ctx, query).Decode(&marketItem)
 	return marketItem, err
 }
 
 func (ds DatastoreMarketItemMG) List(ctx context.Context) ([]*models.MarketItem, error) {
 	var marketItems []*models.MarketItem
-	cursor, err := ds.MarketItemCollection.Find(ctx, bson.D{{}})
+	cursor, err := ds.marketItemCollection.Find(ctx, bson.D{{}})
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +83,7 @@ func (ds DatastoreMarketItemMG) Update(ctx context.Context, params *models.Marke
 		}}}
 
 	var marketItemUpdated *models.MarketItem
-	err := ds.MarketItemCollection.FindOneAndUpdate(ctx, filter, update).Decode(&marketItemUpdated)
+	err := ds.marketItemCollection.FindOneAndUpdate(ctx, filter, update).Decode(&marketItemUpdated)
 	if err != nil {
 		return nil, errors.New("no matched document found for update")
 	}
@@ -87,7 +93,7 @@ func (ds DatastoreMarketItemMG) Update(ctx context.Context, params *models.Marke
 
 func (ds DatastoreMarketItemMG) Delete(ctx context.Context, id *string) error {
 	filter := bson.D{primitive.E{Key: "item_id", Value: id}}
-	result, _ := ds.MarketItemCollection.DeleteOne(ctx, filter)
+	result, _ := ds.marketItemCollection.DeleteOne(ctx, filter)
 	if result.DeletedCount != 1 {
 		return errors.New("no matched document found for delete")
 	}

@@ -22,7 +22,13 @@ func NewDatastoreLoanMG(loanCollection *mongo.Collection) *DatastoreLoanMG {
 var _ models.DatastoreLoan = (*DatastoreLoanMG)(nil)
 
 func (ds DatastoreLoanMG) Create(ctx context.Context, params *models.Loan) (*models.Loan, error) {
-	_, err := ds.loanCollection.InsertOne(ctx, params)
+	count, err := ds.loanCollection.CountDocuments(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+
+	params.LoanId = int(count) + 1
+	_, err = ds.loanCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
 	}

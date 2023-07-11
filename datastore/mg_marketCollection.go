@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"errors"
+
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -10,7 +11,7 @@ import (
 )
 
 type DatastoreMarketCollectionMG struct {
-	MarketCollectionCollection *mongo.Collection
+	marketCollectionCollection *mongo.Collection
 }
 
 func NewDatastoreMarketCollectionMG(MarketCollectionCollection *mongo.Collection) *DatastoreMarketCollectionMG {
@@ -20,7 +21,13 @@ func NewDatastoreMarketCollectionMG(MarketCollectionCollection *mongo.Collection
 var _ models.DatastoreMarketCollection = (*DatastoreMarketCollectionMG)(nil)
 
 func (ds DatastoreMarketCollectionMG) Create(ctx context.Context, params *models.MarketCollection) (*models.MarketCollection, error) {
-	_, err := ds.MarketCollectionCollection.InsertOne(ctx, params)
+	count, err := ds.marketCollectionCollection.CountDocuments(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+	params.CollectionId = int(count) + 1
+
+	_, err = ds.marketCollectionCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
 	}
@@ -31,13 +38,13 @@ func (ds DatastoreMarketCollectionMG) Create(ctx context.Context, params *models
 func (ds DatastoreMarketCollectionMG) FindByID(ctx context.Context, id *string) (*models.MarketCollection, error) {
 	var MarketCollection *models.MarketCollection
 	query := bson.D{bson.E{Key: "collection_id", Value: id}}
-	err := ds.MarketCollectionCollection.FindOne(ctx, query).Decode(&MarketCollection)
+	err := ds.marketCollectionCollection.FindOne(ctx, query).Decode(&MarketCollection)
 	return MarketCollection, err
 }
 
 func (ds DatastoreMarketCollectionMG) List(ctx context.Context) ([]*models.MarketCollection, error) {
 	var MarketCollections []*models.MarketCollection
-	cursor, err := ds.MarketCollectionCollection.Find(ctx, bson.D{{}})
+	cursor, err := ds.marketCollectionCollection.Find(ctx, bson.D{{}})
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +79,7 @@ func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models
 		}}}
 
 	var MarketCollectionUpdated *models.MarketCollection
-	err := ds.MarketCollectionCollection.FindOneAndUpdate(ctx, filter, update).Decode(&MarketCollectionUpdated)
+	err := ds.marketCollectionCollection.FindOneAndUpdate(ctx, filter, update).Decode(&MarketCollectionUpdated)
 	if err != nil {
 		return nil, errors.New("no matched document found for update")
 	}
@@ -82,7 +89,7 @@ func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models
 
 func (ds DatastoreMarketCollectionMG) Delete(ctx context.Context, id *string) error {
 	filter := bson.D{primitive.E{Key: "collection_id", Value: id}}
-	result, _ := ds.MarketCollectionCollection.DeleteOne(ctx, filter)
+	result, _ := ds.marketCollectionCollection.DeleteOne(ctx, filter)
 	if result.DeletedCount != 1 {
 		return errors.New("no matched document found for delete")
 	}

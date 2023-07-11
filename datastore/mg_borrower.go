@@ -21,7 +21,13 @@ func NewDatastoreBorrowerMG(borrowerCollection *mongo.Collection) *DatastoreBorr
 var _ models.DatastoreBorrower = (*DatastoreBorrowerMG)(nil)
 
 func (ds DatastoreBorrowerMG) Create(ctx context.Context, params *models.Borrower) (*models.Borrower, error) {
-	_, err := ds.borrowerCollection.InsertOne(ctx, params)
+	count, err := ds.borrowerCollection.CountDocuments(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+
+	params.BorrowerID = int(count) + 1
+	_, err = ds.borrowerCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
 	}

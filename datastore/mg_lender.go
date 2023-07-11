@@ -21,7 +21,14 @@ func NewDatastoreLenderMG(LenderCollection *mongo.Collection) *DatastoreLenderMG
 var _ models.DatastoreLender = (*DatastoreLenderMG)(nil)
 
 func (ds DatastoreLenderMG) Create(ctx context.Context, params *models.Lender) (*models.Lender, error) {
-	_, err := ds.lenderCollection.InsertOne(ctx, params)
+	count, err := ds.lenderCollection.CountDocuments(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+
+	params.LenderID = int(count) + 1
+
+	_, err = ds.lenderCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
 	}

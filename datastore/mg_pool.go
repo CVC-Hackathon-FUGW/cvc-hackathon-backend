@@ -21,7 +21,13 @@ func NewDatastorePoolMG(poolCollection *mongo.Collection) *DatastorePoolMG {
 var _ models.DatastorePool = (*DatastorePoolMG)(nil)
 
 func (ds DatastorePoolMG) Create(ctx context.Context, params *models.Pool) (*models.Pool, error) {
-	_, err := ds.poolCollection.InsertOne(ctx, params)
+	count, err := ds.poolCollection.CountDocuments(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+	params.PoolId = int(count) + 1
+
+	_, err = ds.poolCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
 	}
