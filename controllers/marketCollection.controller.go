@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"net/http"
+
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type MarketCollectionController struct {
@@ -42,7 +44,10 @@ func (mc *MarketCollectionController) GetMarketCollection(ctx *gin.Context) {
 }
 
 func (mc *MarketCollectionController) List(ctx *gin.Context) {
-	marketCollections, err := mc.MarketCollectionService.List()
+	params := enum.MarketCollectionsParams{
+		Name: ctx.Query("name"),
+	}
+	marketCollections, err := mc.MarketCollectionService.List(params)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return

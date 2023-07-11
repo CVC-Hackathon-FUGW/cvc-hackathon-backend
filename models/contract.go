@@ -49,7 +49,7 @@ type DatastoreMarketItem interface {
 type DatastoreMarketCollection interface {
 	Create(ctx context.Context, params *MarketCollection) (*MarketCollection, error)
 	FindByID(ctx context.Context, id *string) (*MarketCollection, error)
-	List(ctx context.Context) ([]*MarketCollection, error)
+	List(ctx context.Context, params enum.MarketCollectionsParams) ([]*MarketCollection, error)
 	Update(ctx context.Context, params *MarketCollection) (*MarketCollection, error)
 	Delete(ctx context.Context, params *string) error
 }

@@ -45,8 +45,7 @@ func (uc *PoolController) GetPool(ctx *gin.Context) {
 
 func (uc *PoolController) List(ctx *gin.Context) {
 	params := enum.PoolParams{
-		NamePool:       ctx.Query("name"),
-		NameCollection: ctx.Query("collection"),
+		Name: ctx.Query("name"),
 	}
 
 	pools, err := uc.PoolService.List(params)

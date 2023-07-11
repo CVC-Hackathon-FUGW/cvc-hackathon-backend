@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -42,9 +43,14 @@ func (ds DatastoreMarketCollectionMG) FindByID(ctx context.Context, id *string) 
 	return MarketCollection, err
 }
 
-func (ds DatastoreMarketCollectionMG) List(ctx context.Context) ([]*models.MarketCollection, error) {
+func (ds DatastoreMarketCollectionMG) List(ctx context.Context, params enum.MarketCollectionsParams) ([]*models.MarketCollection, error) {
 	var MarketCollections []*models.MarketCollection
-	cursor, err := ds.marketCollectionCollection.Find(ctx, bson.D{{}})
+	filter := bson.D{{}}
+	if params.Name != "" {
+		filter = bson.D{{Key: "collection_name", Value: primitive.Regex{Pattern: params.Name, Options: ""}}}
+	}
+
+	cursor, err := ds.marketCollectionCollection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}

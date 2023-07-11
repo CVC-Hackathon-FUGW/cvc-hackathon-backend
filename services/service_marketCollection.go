@@ -3,12 +3,14 @@ package services
 import (
 	"context"
 	"errors"
+	"os"
+
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	utils "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg"
 	aws_pkg "github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/pkg/aws"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"os"
 )
 
 type MarketCollectionService struct {
@@ -47,9 +49,9 @@ func (p *MarketCollectionService) Show(id *string) (*models.MarketCollection, er
 	return item, err
 }
 
-func (p *MarketCollectionService) List() ([]*models.MarketCollection, error) {
+func (p *MarketCollectionService) List(params enum.MarketCollectionsParams) ([]*models.MarketCollection, error) {
 	ctx := p.ctx
-	items, err := p.dataStoreMarketCollection.List(ctx)
+	items, err := p.dataStoreMarketCollection.List(ctx, params)
 	return items, err
 }
 

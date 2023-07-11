@@ -1,6 +1,9 @@
 package enum
 
 type PoolParams struct {
-	NamePool       string
-	NameCollection string
+	Name string
+}
+
+type MarketCollectionsParams struct {
+	Name string
 }
