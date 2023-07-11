@@ -78,7 +78,7 @@ func (mc *MarketCollectionController) DeleteMarketCollection(ctx *gin.Context) {
 }
 
 func (mc *MarketCollectionController) RegisterRoutes(rg *gin.RouterGroup) {
-	userroute := rg.Group("/MarketCollections")
+	userroute := rg.Group("/marketCollections")
 	userroute.POST("", mc.CreateMarketCollection)
 	userroute.GET("/:id", mc.GetMarketCollection)
 	userroute.GET("", mc.List)
