@@ -67,7 +67,6 @@ func (ds DatastoreMarketItemMG) Update(ctx context.Context, params *models.Marke
 	filter := bson.D{primitive.E{Key: "item_id", Value: params.ItemId}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "item_id", Value: params.ItemId},
-			primitive.E{Key: "address", Value: params.TokenAddress},
 			primitive.E{Key: "token_address", Value: params.TokenAddress},
 			primitive.E{Key: "price", Value: params.Price},
 			primitive.E{Key: "is_offerable", Value: params.IsOfferable},

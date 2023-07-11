@@ -44,6 +44,10 @@ var (
 	dsMarketItem *datastore.DatastoreMarketItemMG
 	marketItemc  controllers.MarketItemController
 
+	marketCollections  *mongo.Collection
+	dsMarketCollection *datastore.DatastoreMarketCollectionMG
+	marketCollectionc  controllers.MarketCollectionController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -93,6 +97,11 @@ func init() {
 	dsMarketItem = datastore.NewDatastoreMarketItemMG(marketItems)
 	marketItemService := services.NewMarketItemService(ctx, dsMarketItem)
 	marketItemc = controllers.NewMarketItemController(*marketItemService)
+
+	marketCollections = mongoclient.Database("hackathon").Collection("marketCollections")
+	dsMarketCollection = datastore.NewDatastoreMarketCollectionMG(marketCollections)
+	marketCollectionService := services.NewMarketCollectionService(ctx, dsMarketCollection)
+	marketCollectionc = controllers.NewMarketCollectionController(*marketCollectionService)
 
 	server = gin.Default()
 }
