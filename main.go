@@ -110,16 +110,17 @@ func init() {
 func main() {
 	defer mongoclient.Disconnect(ctx)
 
-	basepath := server.Group("/v1")
+	server.Use(cors.Default())
 
-	basepath.Use(CORSMiddleware())
-	basepath.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"*"},
-		AllowHeaders:     []string{"Content-Type,access-control-allow-origin, access-control-allow-headers, Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
+	basepath := server.Group("/v1")
+	// basepath.Use(CORSMiddleware())
+	// basepath.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     []string{"*"},
+	// 	AllowMethods:     []string{"*"},
+	// 	AllowHeaders:     []string{"Content-Type,access-control-allow-origin, access-control-allow-headers, Origin"},
+	// 	ExposeHeaders:    []string{"Content-Length"},
+	// 	AllowCredentials: true,
+	// }))
 
 	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
 	uc.RegisterUserRoutes(basepath)
