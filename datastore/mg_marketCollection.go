@@ -28,7 +28,7 @@ func (ds DatastoreMarketCollectionMG) Create(ctx context.Context, params *models
 		return nil, err
 	}
 	params.CollectionId = int(count) + 1
-
+	params.IsActive = true
 	_, err = ds.marketCollectionCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
