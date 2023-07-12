@@ -28,6 +28,7 @@ func (ds DatastorePoolMG) Create(ctx context.Context, params *models.Pool) (*mod
 		return nil, err
 	}
 	params.PoolId = int(count) + 1
+	params.IsActive = true
 
 	_, err = ds.poolCollection.InsertOne(ctx, params)
 	if err != nil {
@@ -66,7 +67,9 @@ func (ds DatastorePoolMG) List(ctx context.Context, params enum.PoolParams) ([]*
 		if err != nil {
 			return nil, err
 		}
-		pools = append(pools, &pool)
+		if pool.IsActive == true {
+			pools = append(pools, &pool)
+		}
 	}
 
 	if err := cursor.Err(); err != nil {
@@ -104,9 +107,20 @@ func (ds DatastorePoolMG) Update(ctx context.Context, params *models.Pool) (*mod
 }
 
 func (ds DatastorePoolMG) Delete(ctx context.Context, id *string) error {
-	filter := bson.D{primitive.E{Key: "pool_id", Value: id}}
-	result, _ := ds.poolCollection.DeleteOne(ctx, filter)
-	if result.DeletedCount != 1 {
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{primitive.E{Key: "pool_id", Value: idInt}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "pool_id", Value: idInt},
+			primitive.E{Key: "is_active", Value: false},
+		}}}
+
+	result, _ := ds.poolCollection.UpdateOne(ctx, filter, update)
+
+	if result.MatchedCount != 1 {
 		return errors.New("no matched document found for delete")
 	}
 	return nil

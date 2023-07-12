@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -26,6 +27,7 @@ func (ds DatastoreMarketItemMG) Create(ctx context.Context, params *models.Marke
 		return nil, err
 	}
 	params.ItemId = int(count) + 1
+	params.IsActive = true
 
 	_, err = ds.marketItemCollection.InsertOne(ctx, params)
 	if err != nil {
@@ -37,8 +39,13 @@ func (ds DatastoreMarketItemMG) Create(ctx context.Context, params *models.Marke
 
 func (ds DatastoreMarketItemMG) FindByID(ctx context.Context, id *string) (*models.MarketItem, error) {
 	var marketItem *models.MarketItem
-	query := bson.D{bson.E{Key: "item_id", Value: id}}
-	err := ds.marketItemCollection.FindOne(ctx, query).Decode(&marketItem)
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return nil, err
+	}
+
+	query := bson.D{bson.E{Key: "item_id", Value: idInt}}
+	err = ds.marketItemCollection.FindOne(ctx, query).Decode(&marketItem)
 	return marketItem, err
 }
 
@@ -54,7 +61,9 @@ func (ds DatastoreMarketItemMG) List(ctx context.Context) ([]*models.MarketItem,
 		if err != nil {
 			return nil, err
 		}
-		marketItems = append(marketItems, &marketItem)
+		if marketItem.IsActive == true {
+			marketItems = append(marketItems, &marketItem)
+		}
 	}
 
 	if err := cursor.Err(); err != nil {
@@ -92,9 +101,20 @@ func (ds DatastoreMarketItemMG) Update(ctx context.Context, params *models.Marke
 }
 
 func (ds DatastoreMarketItemMG) Delete(ctx context.Context, id *string) error {
-	filter := bson.D{primitive.E{Key: "item_id", Value: id}}
-	result, _ := ds.marketItemCollection.DeleteOne(ctx, filter)
-	if result.DeletedCount != 1 {
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{primitive.E{Key: "item_id", Value: idInt}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "item_id", Value: idInt},
+			primitive.E{Key: "is_active", Value: false},
+		}}}
+
+	result, _ := ds.marketItemCollection.UpdateOne(ctx, filter, update)
+
+	if result.MatchedCount != 1 {
 		return errors.New("no matched document found for delete")
 	}
 	return nil

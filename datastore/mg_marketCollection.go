@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
@@ -38,8 +39,12 @@ func (ds DatastoreMarketCollectionMG) Create(ctx context.Context, params *models
 
 func (ds DatastoreMarketCollectionMG) FindByID(ctx context.Context, id *string) (*models.MarketCollection, error) {
 	var MarketCollection *models.MarketCollection
-	query := bson.D{bson.E{Key: "collection_id", Value: id}}
-	err := ds.marketCollectionCollection.FindOne(ctx, query).Decode(&MarketCollection)
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return nil, err
+	}
+	query := bson.D{bson.E{Key: "collection_id", Value: idInt}}
+	err = ds.marketCollectionCollection.FindOne(ctx, query).Decode(&MarketCollection)
 	return MarketCollection, err
 }
 
@@ -60,7 +65,9 @@ func (ds DatastoreMarketCollectionMG) List(ctx context.Context, params enum.Mark
 		if err != nil {
 			return nil, err
 		}
-		MarketCollections = append(MarketCollections, &MarketCollection)
+		if MarketCollection.IsActive == true {
+			MarketCollections = append(MarketCollections, &MarketCollection)
+		}
 	}
 
 	if err := cursor.Err(); err != nil {
@@ -94,10 +101,22 @@ func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models
 }
 
 func (ds DatastoreMarketCollectionMG) Delete(ctx context.Context, id *string) error {
-	filter := bson.D{primitive.E{Key: "collection_id", Value: id}}
-	result, _ := ds.marketCollectionCollection.DeleteOne(ctx, filter)
-	if result.DeletedCount != 1 {
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{primitive.E{Key: "collection_id", Value: idInt}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "collection_id", Value: idInt},
+			primitive.E{Key: "is_active", Value: false},
+		}}}
+
+	result, _ := ds.marketCollectionCollection.UpdateOne(ctx, filter, update)
+
+	if result.MatchedCount != 1 {
 		return errors.New("no matched document found for delete")
 	}
+
 	return nil
 }

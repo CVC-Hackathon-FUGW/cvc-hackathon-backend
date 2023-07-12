@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -38,8 +39,12 @@ func (ds DatastoreLenderMG) Create(ctx context.Context, params *models.Lender) (
 
 func (ds DatastoreLenderMG) FindByID(ctx context.Context, id *string) (*models.Lender, error) {
 	var lender *models.Lender
-	query := bson.D{bson.E{Key: "lender_id", Value: id}}
-	err := ds.lenderCollection.FindOne(ctx, query).Decode(&lender)
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return nil, err
+	}
+	query := bson.D{bson.E{Key: "lender_id", Value: idInt}}
+	err = ds.lenderCollection.FindOne(ctx, query).Decode(&lender)
 	return lender, err
 }
 

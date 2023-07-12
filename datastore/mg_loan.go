@@ -29,7 +29,9 @@ func (ds DatastoreLoanMG) Create(ctx context.Context, params *models.Loan) (*mod
 		return nil, err
 	}
 
+	params.IsActive = true
 	params.LoanId = int(count) + 1
+
 	_, err = ds.loanCollection.InsertOne(ctx, params)
 	if err != nil {
 		return nil, err
@@ -40,8 +42,13 @@ func (ds DatastoreLoanMG) Create(ctx context.Context, params *models.Loan) (*mod
 
 func (ds DatastoreLoanMG) FindByID(ctx context.Context, id *string) (*models.Loan, error) {
 	var loan *models.Loan
-	query := bson.D{bson.E{Key: "loan_id", Value: id}}
-	err := ds.loanCollection.FindOne(ctx, query).Decode(&loan)
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return nil, err
+	}
+
+	query := bson.D{bson.E{Key: "loan_id", Value: idInt}}
+	err = ds.loanCollection.FindOne(ctx, query).Decode(&loan)
 	return loan, err
 }
 
@@ -57,7 +64,9 @@ func (ds DatastoreLoanMG) List(ctx context.Context) ([]*models.Loan, error) {
 		if err != nil {
 			return nil, err
 		}
-		loans = append(loans, &loan)
+		if loan.IsActive == true {
+			loans = append(loans, &loan)
+		}
 	}
 
 	if err := cursor.Err(); err != nil {
@@ -97,9 +106,20 @@ func (ds DatastoreLoanMG) Update(ctx context.Context, params *models.Loan) (*mod
 }
 
 func (ds DatastoreLoanMG) Delete(ctx context.Context, id *string) error {
-	filter := bson.D{primitive.E{Key: "loan_id", Value: id}}
-	result, _ := ds.loanCollection.DeleteOne(ctx, filter)
-	if result.DeletedCount != 1 {
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{primitive.E{Key: "loan_id", Value: idInt}}
+	update := bson.D{
+		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "loan_id", Value: idInt},
+			primitive.E{Key: "is_active", Value: false},
+		}}}
+
+	result, _ := ds.loanCollection.UpdateOne(ctx, filter, update)
+
+	if result.MatchedCount != 1 {
 		return errors.New("no matched document found for delete")
 	}
 	return nil
