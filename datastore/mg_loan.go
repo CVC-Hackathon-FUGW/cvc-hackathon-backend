@@ -112,7 +112,7 @@ func (ds DatastoreLoanMG) MaxAmount(ctx context.Context, poolId *string) ([]*mod
 		return nil, err
 	}
 
-	max := -1
+	var max int64 = -1
 	for cursor.Next(ctx) {
 		var loan models.Loan
 		err := cursor.Decode(&loan)

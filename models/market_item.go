@@ -6,7 +6,7 @@ type MarketItem struct {
 	TokenId           int    `bson:"token_id" json:"token_id"`
 	Seller            string `bson:"seller" json:"seller"`
 	Owner             string `bson:"owner" json:"owner"`
-	Price             int    `bson:"price" json:"price"`
+	Price             int64  `bson:"price" json:"price"`
 	IsOfferable       bool   `bson:"is_offerable" json:"is_offerable"`
 	AcceptVisaPayment bool   `bson:"accept_visa_payment" json:"accept_visa_payment"` //visa or paypal
 	CurrentOfferValue int    `bson:"current_offer_value" json:"current_offer_value"`
