@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
@@ -44,7 +45,7 @@ func (p *PoolService) Create(pool *models.Pool) error {
 
 func (p *PoolService) Show(id *string) (*models.Pool, error) {
 	ctx := p.ctx
-
+	fmt.Println("id show", id)
 	item, err := p.dataStorePool.FindByID(ctx, id)
 	return item, err
 }

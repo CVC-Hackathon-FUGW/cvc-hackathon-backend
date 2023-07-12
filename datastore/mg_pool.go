@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
@@ -38,8 +39,13 @@ func (ds DatastorePoolMG) Create(ctx context.Context, params *models.Pool) (*mod
 
 func (ds DatastorePoolMG) FindByID(ctx context.Context, id *string) (*models.Pool, error) {
 	var pool *models.Pool
-	query := bson.D{bson.E{Key: "pool_id", Value: id}}
-	err := ds.poolCollection.FindOne(ctx, query).Decode(&pool)
+
+	idInt, err := strconv.Atoi(*id)
+	if err != nil {
+		return nil, err
+	}
+	query := bson.D{bson.E{Key: "pool_id", Value: idInt}}
+	err = ds.poolCollection.FindOne(ctx, query).Decode(&pool)
 	return pool, err
 }
 

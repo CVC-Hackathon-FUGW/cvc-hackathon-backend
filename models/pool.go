@@ -9,4 +9,5 @@ type Pool struct {
 	Duration        int    `bson:"duration" json:"duration"`
 	State           bool   `bson:"state" json:"state"`
 	Image           string `bson:"image" json:"image"`
+	IsActive        bool   `bson:"is_active" json:"is_active"`
 }

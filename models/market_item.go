@@ -12,4 +12,5 @@ type MarketItem struct {
 	CurrentOfferValue int    `bson:"current_offer_value" json:"current_offer_value"`
 	CurrentOfferer    string `bson:"current_offerer" json:"current_offerer"`
 	Sold              bool   `bson:"sold" json:"sold"`
+	IsActive          bool   `bson:"is_active" json:"is_active"`
 }
