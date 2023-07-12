@@ -6,8 +6,8 @@ import (
 
 type Loan struct {
 	LoanId       int       `bson:"loan_id" json:"loan_id"`
-	Lender       int       `bson:"lender" json:"lender"`
-	Borrower     int       `bson:"borrower" json:"borrower"`
+	Lender       string    `bson:"lender" json:"lender"`
+	Borrower     string    `bson:"borrower" json:"borrower"`
 	Amount       int       `bson:"amount" json:"amount"`
 	StartTime    int       `bson:"start_time" json:"start_time"`
 	Duration     int       `bson:"duration" json:"duration"`
