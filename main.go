@@ -9,6 +9,7 @@ import (
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/controllers"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/datastore"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -110,6 +111,7 @@ func main() {
 	defer mongoclient.Disconnect(ctx)
 
 	basepath := server.Group("/v1")
+	basepath.Use(cors.Default())
 	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
 	uc.RegisterUserRoutes(basepath)
 	pc.RegisterRoutes(basepath)
@@ -118,5 +120,6 @@ func main() {
 	borc.RegisterRoutes(basepath)
 	marketItemc.RegisterRoutes(basepath)
 	marketCollectionc.RegisterRoutes(basepath)
+
 	log.Fatal(server.Run(":9090"))
 }
