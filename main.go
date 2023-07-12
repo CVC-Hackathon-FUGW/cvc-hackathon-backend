@@ -9,7 +9,6 @@ import (
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/controllers"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/datastore"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -104,13 +103,14 @@ func init() {
 	marketCollectionService := services.NewMarketCollectionService(ctx, dsMarketCollection)
 	marketCollectionc = controllers.NewMarketCollectionController(*marketCollectionService)
 
-	server = gin.Default()
 }
 
 func main() {
 	defer mongoclient.Disconnect(ctx)
 
-	server.Use(cors.Default())
+	server = gin.Default()
+	server.Use(CORSMiddleware())
+
 	basepath := server.Group("/v1")
 
 	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
@@ -123,4 +123,19 @@ func main() {
 	marketCollectionc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run(":9090"))
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
