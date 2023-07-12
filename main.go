@@ -111,16 +111,7 @@ func main() {
 	defer mongoclient.Disconnect(ctx)
 
 	server.Use(cors.Default())
-
 	basepath := server.Group("/v1")
-	// basepath.Use(CORSMiddleware())
-	// basepath.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     []string{"*"},
-	// 	AllowMethods:     []string{"*"},
-	// 	AllowHeaders:     []string{"Content-Type,access-control-allow-origin, access-control-allow-headers, Origin"},
-	// 	ExposeHeaders:    []string{"Content-Length"},
-	// 	AllowCredentials: true,
-	// }))
 
 	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
 	uc.RegisterUserRoutes(basepath)
@@ -132,21 +123,4 @@ func main() {
 	marketCollectionc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run(":9090"))
-}
-
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		c.Header("Access-Control-Allow-Origin", "*")
-		c.Header("Access-Control-Allow-Credentials", "true")
-		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT")
-
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-
-		c.Next()
-	}
 }

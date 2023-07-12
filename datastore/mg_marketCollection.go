@@ -76,9 +76,6 @@ func (ds DatastoreMarketCollectionMG) List(ctx context.Context, params enum.Mark
 
 	cursor.Close(ctx)
 
-	if len(MarketCollections) == 0 {
-		return nil, errors.New("documents not found")
-	}
 	return MarketCollections, nil
 }
 

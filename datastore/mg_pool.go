@@ -78,9 +78,6 @@ func (ds DatastorePoolMG) List(ctx context.Context, params enum.PoolParams) ([]*
 
 	cursor.Close(ctx)
 
-	if len(pools) == 0 {
-		return nil, errors.New("documents not found")
-	}
 	return pools, nil
 }
 

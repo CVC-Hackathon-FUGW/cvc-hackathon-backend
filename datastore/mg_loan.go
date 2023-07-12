@@ -75,9 +75,6 @@ func (ds DatastoreLoanMG) List(ctx context.Context) ([]*models.Loan, error) {
 
 	cursor.Close(ctx)
 
-	if len(loans) == 0 {
-		return nil, errors.New("documents not found")
-	}
 	return loans, nil
 }
 
