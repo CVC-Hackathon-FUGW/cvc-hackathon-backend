@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/controllers"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/datastore"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
@@ -109,8 +110,7 @@ func main() {
 	defer mongoclient.Disconnect(ctx)
 
 	server = gin.Default()
-	server.Use(CORSMiddleware())
-
+	server.Use(cors.Default())
 	basepath := server.Group("/v1")
 
 	basepath.GET("/hello", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, nil) })
