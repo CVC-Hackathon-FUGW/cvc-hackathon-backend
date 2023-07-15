@@ -125,7 +125,7 @@ func main() {
 	marketItemc.RegisterRoutes(basepath)
 	marketCollectionc.RegisterRoutes(basepath)
 
-	log.Fatal(server.Run(":9090"))
+	log.Fatal(server.Run())
 }
 
 func CORSMiddleware() gin.HandlerFunc {
