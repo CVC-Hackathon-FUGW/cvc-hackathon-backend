@@ -76,20 +76,56 @@ func (ds DatastoreMarketItemMG) List(ctx context.Context) ([]*models.MarketItem,
 }
 
 func (ds DatastoreMarketItemMG) Update(ctx context.Context, params *models.MarketItem) (*models.MarketItem, error) {
+	var marketItemDB *models.MarketItem
+
+	query := bson.D{bson.E{Key: "item_id", Value: params.ItemId}}
+	err := ds.marketItemCollection.FindOne(ctx, query).Decode(&marketItemDB)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.TokenAddress != nil {
+		marketItemDB.TokenAddress = params.TokenAddress
+	}
+
+	if params.Price != nil {
+		marketItemDB.Price = params.Price
+	}
+
+	if params.IsOfferable != nil {
+		marketItemDB.IsOfferable = params.IsOfferable
+	}
+
+	if params.AcceptVisaPayment != nil {
+		marketItemDB.AcceptVisaPayment = params.AcceptVisaPayment
+	}
+
+	if params.CurrentOfferValue != nil {
+		marketItemDB.CurrentOfferValue = params.CurrentOfferValue
+	}
+
+	if params.CurrentOfferer != nil {
+		marketItemDB.CurrentOfferer = params.CurrentOfferer
+	}
+
+	if params.Sold != nil {
+		marketItemDB.Sold = params.Sold
+	}
+
 	filter := bson.D{primitive.E{Key: "item_id", Value: params.ItemId}}
 	update := bson.D{
-		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "item_id", Value: params.ItemId},
-			primitive.E{Key: "token_address", Value: params.TokenAddress},
-			primitive.E{Key: "price", Value: params.Price},
-			primitive.E{Key: "is_offerable", Value: params.IsOfferable},
-			primitive.E{Key: "accept_visa_payment", Value: params.AcceptVisaPayment},
-			primitive.E{Key: "current_offer_value", Value: params.CurrentOfferValue},
-			primitive.E{Key: "current_offerer", Value: params.CurrentOfferer},
-			primitive.E{Key: "sold", Value: params.Sold},
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "token_address", Value: marketItemDB.TokenAddress},
+			primitive.E{Key: "price", Value: marketItemDB.Price},
+			primitive.E{Key: "is_offerable", Value: marketItemDB.IsOfferable},
+			primitive.E{Key: "accept_visa_payment", Value: marketItemDB.AcceptVisaPayment},
+			primitive.E{Key: "current_offer_value", Value: marketItemDB.CurrentOfferValue},
+			primitive.E{Key: "current_offerer", Value: marketItemDB.CurrentOfferer},
+			primitive.E{Key: "sold", Value: marketItemDB.Sold},
 		}}}
 
 	var marketItemUpdated *models.MarketItem
-	err := ds.marketItemCollection.FindOneAndUpdate(ctx, filter, update).Decode(&marketItemUpdated)
+	err = ds.marketItemCollection.FindOneAndUpdate(ctx, filter, update).Decode(&marketItemUpdated)
 	if err != nil {
 		return nil, errors.New("no matched document found for update")
 	}
