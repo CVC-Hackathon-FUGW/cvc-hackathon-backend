@@ -99,7 +99,7 @@ func (ds DatastorePoolMG) Update(ctx context.Context, params *models.Pool) (*mod
 	}
 
 	if params.CollectionName != nil {
-		poolDB.TotalPoolAmount = params.TotalPoolAmount
+		poolDB.CollectionName = params.CollectionName
 	}
 
 	if params.APY != nil {
