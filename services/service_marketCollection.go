@@ -25,14 +25,14 @@ func NewMarketCollectionService(ctx context.Context, datastoreMarketCollection m
 	}
 }
 
-func (p *MarketCollectionService) Create(MarketCollection *models.MarketCollection) error {
+func (p *MarketCollectionService) Create(marketCollection *models.MarketCollection) error {
 	ctx := p.ctx
 
-	if ok := utils.ValidateAddress(MarketCollection.TokenAddress); !ok {
+	if ok := utils.ValidateAddress(*marketCollection.TokenAddress); !ok {
 		return errors.New("invalid token address")
 	}
 
-	_, err := p.dataStoreMarketCollection.Create(ctx, MarketCollection)
+	_, err := p.dataStoreMarketCollection.Create(ctx, marketCollection)
 
 	// err = p.UploadFiles(MarketCollection.Image)
 	// if err != nil {
@@ -58,8 +58,8 @@ func (p *MarketCollectionService) List(params enum.MarketCollectionsParams) ([]*
 func (p *MarketCollectionService) Update(params *models.MarketCollection) (*models.MarketCollection, error) {
 	ctx := p.ctx
 
-	if params.TokenAddress != "" {
-		if ok := utils.ValidateAddress(params.TokenAddress); !ok {
+	if params.TokenAddress != nil {
+		if ok := utils.ValidateAddress(*params.TokenAddress); !ok {
 			return nil, errors.New("invalid token address")
 		}
 	}

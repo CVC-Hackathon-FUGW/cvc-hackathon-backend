@@ -49,7 +49,7 @@ func (ds DatastoreMarketCollectionMG) FindByID(ctx context.Context, id *string) 
 }
 
 func (ds DatastoreMarketCollectionMG) List(ctx context.Context, params enum.MarketCollectionsParams) ([]*models.MarketCollection, error) {
-	var MarketCollections []*models.MarketCollection
+	var marketCollections []*models.MarketCollection
 	filter := bson.D{{}}
 	if params.Name != "" {
 		filter = bson.D{{Key: "collection_name", Value: primitive.Regex{Pattern: params.Name, Options: ""}}}
@@ -66,7 +66,7 @@ func (ds DatastoreMarketCollectionMG) List(ctx context.Context, params enum.Mark
 			return nil, err
 		}
 		if MarketCollection.IsActive == true {
-			MarketCollections = append(MarketCollections, &MarketCollection)
+			marketCollections = append(marketCollections, &MarketCollection)
 		}
 	}
 
@@ -76,20 +76,40 @@ func (ds DatastoreMarketCollectionMG) List(ctx context.Context, params enum.Mark
 
 	cursor.Close(ctx)
 
-	return MarketCollections, nil
+	return marketCollections, nil
 }
 
 func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models.MarketCollection) (*models.MarketCollection, error) {
+	var marketCollectionDB *models.MarketCollection
+
+	query := bson.D{bson.E{Key: "collection_id", Value: params.CollectionId}}
+	err := ds.marketCollectionCollection.FindOne(ctx, query).Decode(&marketCollectionDB)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.CollectionName != nil {
+		marketCollectionDB.CollectionName = params.CollectionName
+	}
+
+	if params.TokenAddress != nil {
+		marketCollectionDB.TokenAddress = params.TokenAddress
+	}
+
+	if params.Image != nil {
+		marketCollectionDB.Image = params.Image
+	}
+
 	filter := bson.D{primitive.E{Key: "collection_id", Value: params.CollectionId}}
 	update := bson.D{
-		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "item_id", Value: params.CollectionId},
-			primitive.E{Key: "token_address", Value: params.TokenAddress},
-			primitive.E{Key: "collection_name", Value: params.CollectionName},
-			primitive.E{Key: "image", Value: params.Image},
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "token_address", Value: marketCollectionDB.TokenAddress},
+			primitive.E{Key: "collection_name", Value: marketCollectionDB.CollectionName},
+			primitive.E{Key: "image", Value: marketCollectionDB.Image},
 		}}}
 
 	var MarketCollectionUpdated *models.MarketCollection
-	err := ds.marketCollectionCollection.FindOneAndUpdate(ctx, filter, update).Decode(&MarketCollectionUpdated)
+	err = ds.marketCollectionCollection.FindOneAndUpdate(ctx, filter, update).Decode(&MarketCollectionUpdated)
 	if err != nil {
 		return nil, errors.New("no matched document found for update")
 	}
