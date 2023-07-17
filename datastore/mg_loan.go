@@ -79,22 +79,67 @@ func (ds DatastoreLoanMG) List(ctx context.Context) ([]*models.Loan, error) {
 }
 
 func (ds DatastoreLoanMG) Update(ctx context.Context, params *models.Loan) (*models.Loan, error) {
+	var loanDB *models.Loan
+
+	query := bson.D{bson.E{Key: "loan_id", Value: params.LoanId}}
+	err := ds.loanCollection.FindOne(ctx, query).Decode(&loanDB)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.Lender != nil {
+		loanDB.Lender = params.Lender
+	}
+
+	if params.Borrower != nil {
+		loanDB.Borrower = params.Borrower
+	}
+
+	if params.Amount != nil {
+		loanDB.Amount = params.Amount
+	}
+
+	if params.StartTime != nil {
+		loanDB.StartTime = params.StartTime
+	}
+
+	if params.Duration != nil {
+		loanDB.Duration = params.Duration
+	}
+
+	if params.TokenId != nil {
+		loanDB.TokenId = params.TokenId
+	}
+
+	if params.PoolId != nil {
+		loanDB.PoolId = params.PoolId
+	}
+
+	if params.TokenAddress != nil {
+		loanDB.TokenAddress = params.TokenAddress
+	}
+
+	if params.State != nil {
+		loanDB.State = params.State
+	}
+
 	filter := bson.D{primitive.E{Key: "loan_id", Value: params.LoanId}}
 	update := bson.D{
-		primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "loan_id", Value: params.LoanId},
-			primitive.E{Key: "lender", Value: params.Lender},
-			primitive.E{Key: "borrower", Value: params.Borrower},
-			primitive.E{Key: "amount", Value: params.Amount},
-			primitive.E{Key: "start_time", Value: params.StartTime},
-			primitive.E{Key: "duration", Value: params.Duration},
-			primitive.E{Key: "token_id", Value: params.TokenId},
-			primitive.E{Key: "pool_id", Value: params.PoolId},
-			primitive.E{Key: "token_address", Value: params.TokenAddress},
+		primitive.E{Key: "$set", Value: bson.D{
+			primitive.E{Key: "lender", Value: loanDB.Lender},
+			primitive.E{Key: "borrower", Value: loanDB.Borrower},
+			primitive.E{Key: "amount", Value: loanDB.Amount},
+			primitive.E{Key: "start_time", Value: loanDB.StartTime},
+			primitive.E{Key: "duration", Value: loanDB.Duration},
+			primitive.E{Key: "token_id", Value: loanDB.TokenId},
+			primitive.E{Key: "pool_id", Value: loanDB.PoolId},
+			primitive.E{Key: "token_address", Value: loanDB.TokenAddress},
+			primitive.E{Key: "state", Value: loanDB.State},
 			primitive.E{Key: "updated_at", Value: time.Now()},
 		}}}
 
 	var loanUpdated *models.Loan
-	err := ds.loanCollection.FindOneAndUpdate(ctx, filter, update).Decode(&loanUpdated)
+	err = ds.loanCollection.FindOneAndUpdate(ctx, filter, update).Decode(&loanUpdated)
 	if err != nil {
 		return nil, errors.New("no matched document found for update")
 	}
@@ -136,15 +181,15 @@ func (ds DatastoreLoanMG) MaxAmount(ctx context.Context, poolId *string) ([]*mod
 		if err != nil {
 			return nil, err
 		}
-		if strconv.Itoa(loan.PoolId) != *poolId {
+		if strconv.Itoa(*loan.PoolId) != *poolId {
 			continue
 		}
 
-		if loan.Amount > max {
+		if *loan.Amount > max {
 			loans = []*models.Loan{&loan}
-			max = loan.Amount
+			max = *loan.Amount
 		}
-		if loan.Amount == max {
+		if *loan.Amount == max {
 			loans = append(loans, &loan)
 		}
 	}
@@ -178,10 +223,10 @@ func (ds DatastoreLoanMG) CountLoans(ctx context.Context, poolId *string) (*enum
 		if err != nil {
 			return nil, err
 		}
-		if strconv.Itoa(loan.PoolId) != *poolId {
+		if strconv.Itoa(*loan.PoolId) != *poolId {
 			continue
 		}
-		if loan.State {
+		if *loan.State {
 			count.TotalLoanGot++
 		}
 		count.TotalLoanInPool++

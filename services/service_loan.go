@@ -21,14 +21,14 @@ func NewLoanService(ctx context.Context, datastoreLoan models.DatastoreLoan) *Lo
 	}
 }
 
-func (p *LoanService) Create(Loan *models.Loan) error {
+func (p *LoanService) Create(loan *models.Loan) error {
 	ctx := p.ctx
 
-	if ok := utils.ValidateAddress(Loan.TokenAddress); !ok {
+	if ok := utils.ValidateAddress(*loan.TokenAddress); !ok {
 		return errors.New("invalid token address")
 	}
 
-	_, err := p.datastoreLoan.Create(ctx, Loan)
+	_, err := p.datastoreLoan.Create(ctx, loan)
 	return err
 }
 
@@ -47,8 +47,8 @@ func (p *LoanService) List() ([]*models.Loan, error) {
 func (p *LoanService) Update(params *models.Loan) (*models.Loan, error) {
 	ctx := p.ctx
 
-	if params.TokenAddress != "" {
-		if ok := utils.ValidateAddress(params.TokenAddress); !ok {
+	if params.TokenAddress != nil {
+		if ok := utils.ValidateAddress(*params.TokenAddress); !ok {
 			return nil, errors.New("invalid token address")
 		}
 	}
