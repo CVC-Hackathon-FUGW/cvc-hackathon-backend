@@ -29,7 +29,7 @@ func NewPoolService(ctx context.Context, datastorePool models.DatastorePool) *Po
 func (p *PoolService) Create(pool *models.Pool) error {
 	ctx := p.ctx
 
-	if ok := utils.ValidateAddress(pool.TokenAddress); !ok {
+	if ok := utils.ValidateAddress(*pool.TokenAddress); !ok {
 		return errors.New("invalid token address")
 	}
 
@@ -58,9 +58,8 @@ func (p *PoolService) List(params enum.PoolParams) ([]*models.Pool, error) {
 
 func (p *PoolService) Update(params *models.Pool) (*models.Pool, error) {
 	ctx := p.ctx
-
-	if params.TokenAddress != "" {
-		if ok := utils.ValidateAddress(params.TokenAddress); !ok {
+	if params.TokenAddress != nil {
+		if ok := utils.ValidateAddress(*params.TokenAddress); !ok {
 			return nil, errors.New("invalid token address")
 		}
 	}

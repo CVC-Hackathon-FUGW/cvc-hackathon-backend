@@ -27,7 +27,7 @@ func NewMarketItemService(ctx context.Context, datastoreMarketItem models.Datast
 func (p *MarketItemService) Create(MarketItem *models.MarketItem) error {
 	ctx := p.ctx
 
-	if ok := utils.ValidateAddress(MarketItem.TokenAddress); !ok {
+	if ok := utils.ValidateAddress(*MarketItem.TokenAddress); !ok {
 		return errors.New("invalid token address")
 	}
 
@@ -57,8 +57,8 @@ func (p *MarketItemService) List() ([]*models.MarketItem, error) {
 func (p *MarketItemService) Update(params *models.MarketItem) (*models.MarketItem, error) {
 	ctx := p.ctx
 
-	if params.TokenAddress != "" {
-		if ok := utils.ValidateAddress(params.TokenAddress); !ok {
+	if params.TokenAddress != nil {
+		if ok := utils.ValidateAddress(*params.TokenAddress); !ok {
 			return nil, errors.New("invalid token address")
 		}
 	}
