@@ -152,3 +152,31 @@ func (ds DatastoreMarketItemMG) Delete(ctx context.Context, id *string) error {
 	}
 	return nil
 }
+
+func (ds DatastoreMarketItemMG) FindByAddress(ctx context.Context, tokenAddress *string) ([]*models.MarketItem, error) {
+	filter := bson.D{{Key: "address", Value: tokenAddress}}
+
+	var marketItems []*models.MarketItem
+	cursor, err := ds.marketItemCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		var marketItem models.MarketItem
+		err := cursor.Decode(&marketItem)
+		if err != nil {
+			return nil, err
+		}
+		if marketItem.IsActive == true {
+			marketItems = append(marketItems, &marketItem)
+		}
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	return marketItems, nil
+}

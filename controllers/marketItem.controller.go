@@ -78,6 +78,15 @@ func (mc *MarketItemController) DeleteMarketItem(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
+func (mc *MarketItemController) FindByAddress(ctx *gin.Context) {
+	var address string = ctx.Param("address")
+	markets, err := mc.MarketItemService.FindByAddress(&address)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, markets)
+}
 func (mc *MarketItemController) RegisterRoutes(rg *gin.RouterGroup) {
 	userroute := rg.Group("/marketItems")
 	userroute.POST("", mc.CreateMarketItem)
@@ -85,4 +94,5 @@ func (mc *MarketItemController) RegisterRoutes(rg *gin.RouterGroup) {
 	userroute.GET("", mc.List)
 	userroute.PATCH("", mc.UpdateMarketItem)
 	userroute.DELETE("/:id", mc.DeleteMarketItem)
+	userroute.GET("/address/:address", mc.FindByAddress)
 }
