@@ -10,6 +10,7 @@ type MarketCollectionsParams struct {
 
 type CheckinParams struct {
 	Name string
+	Sort string
 }
 
 type CountLoans struct {

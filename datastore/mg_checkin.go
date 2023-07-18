@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type DatastoreCheckinMG struct {
@@ -53,8 +54,12 @@ func (ds DatastoreCheckinMG) FindByID(ctx context.Context, id *string) (*models.
 func (ds DatastoreCheckinMG) List(ctx context.Context, params enum.CheckinParams) ([]*models.Checkin, error) {
 	var checkins []*models.Checkin
 	filter := bson.D{{}}
+	opts := options.Find().SetSort(bson.D{{Key: "volume", Value: 1}})
+	if params.Sort == "volume" {
+		opts = options.Find().SetSort(bson.D{{Key: "volume", Value: -1}})
+	}
 
-	cursor, err := ds.CheckinCollection.Find(ctx, filter)
+	cursor, err := ds.CheckinCollection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}

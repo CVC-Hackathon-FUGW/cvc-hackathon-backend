@@ -46,6 +46,7 @@ func (uc *CheckinController) GetCheckin(ctx *gin.Context) {
 func (uc *CheckinController) List(ctx *gin.Context) {
 	params := enum.CheckinParams{
 		Name: ctx.Query("name"),
+		Sort: ctx.Query("sort"),
 	}
 
 	Checkins, err := uc.CheckinService.List(params)
