@@ -55,3 +55,11 @@ type DatastoreMarketCollection interface {
 	Update(ctx context.Context, params *MarketCollection) (*MarketCollection, error)
 	Delete(ctx context.Context, params *string) error
 }
+
+type DatastoreCheckin interface {
+	Create(ctx context.Context, params *Checkin) (*Checkin, error)
+	FindByID(ctx context.Context, id *string) (*Checkin, error)
+	List(ctx context.Context, params enum.CheckinParams) ([]*Checkin, error)
+	Update(ctx context.Context, params *Checkin) (*Checkin, error)
+	Delete(ctx context.Context, params *string) error
+}

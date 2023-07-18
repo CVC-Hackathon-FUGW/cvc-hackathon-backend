@@ -50,6 +50,10 @@ var (
 	dsMarketCollection *datastore.DatastoreMarketCollectionMG
 	marketCollectionc  controllers.MarketCollectionController
 
+	checkins  *mongo.Collection
+	dsCheckin *datastore.DatastoreCheckinMG
+	checkinc  controllers.CheckinController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -107,6 +111,11 @@ func init() {
 	marketCollectionService := services.NewMarketCollectionService(ctx, dsMarketCollection)
 	marketCollectionc = controllers.NewMarketCollectionController(*marketCollectionService)
 
+	checkins = mongoclient.Database("hackathon").Collection("checkins")
+	dsCheckin = datastore.NewDatastoreCheckinMG(checkins)
+	checkinService := services.NewCheckinService(ctx, dsCheckin)
+	checkinc = controllers.NewCheckinController(*checkinService)
+
 }
 
 func main() {
@@ -124,6 +133,7 @@ func main() {
 	borc.RegisterRoutes(basepath)
 	marketItemc.RegisterRoutes(basepath)
 	marketCollectionc.RegisterRoutes(basepath)
+	checkinc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run())
 }
