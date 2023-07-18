@@ -184,14 +184,19 @@ func (ds DatastoreLoanMG) MaxAmount(ctx context.Context, poolId *string) ([]*mod
 		if strconv.Itoa(*loan.PoolId) != *poolId {
 			continue
 		}
+		if !loan.IsActive {
+			continue
+		}
+
+		if *loan.Amount == max {
+			loans = append(loans, &loan)
+		}
 
 		if *loan.Amount > max {
 			loans = []*models.Loan{&loan}
 			max = *loan.Amount
 		}
-		if *loan.Amount == max {
-			loans = append(loans, &loan)
-		}
+
 	}
 
 	if err := cursor.Err(); err != nil {
