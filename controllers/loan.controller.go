@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
@@ -87,7 +88,7 @@ func (uc *LoanController) MaxAMount(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    loan,
+		"data":    loan[0].Amount,
 	})
 }
 
@@ -100,7 +101,7 @@ func (uc *LoanController) CountLoan(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    loan,
+		"data":    fmt.Sprintf("%d of %d offers taken", loan.TotalLoanGot, loan.TotalLoanInPool),
 	})
 }
 
@@ -113,5 +114,4 @@ func (uc *LoanController) RegisterRoutes(rg *gin.RouterGroup) {
 	userroute.DELETE("/:id", uc.DeleteLoan)
 	userroute.GET("/pool/:id/max-amount", uc.MaxAMount)
 	userroute.GET("/pool/:id/count", uc.CountLoan)
-
 }
