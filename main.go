@@ -54,6 +54,10 @@ var (
 	dsCheckin *datastore.DatastoreCheckinMG
 	checkinc  controllers.CheckinController
 
+	sellers   *mongo.Collection
+	dsSellers *datastore.DatastoreSellerMG
+	sellerc   controllers.SellerController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -116,6 +120,11 @@ func init() {
 	checkinService := services.NewCheckinService(ctx, dsCheckin)
 	checkinc = controllers.NewCheckinController(*checkinService)
 
+	sellers = mongoclient.Database("hackathon").Collection("sellers")
+	dsSellers = datastore.NewDatastoreSellerMG(sellers)
+	sellersService := services.NewSellerService(ctx, dsSellers)
+	sellerc = controllers.NewSellerController(*sellersService)
+
 }
 
 func main() {
@@ -134,6 +143,7 @@ func main() {
 	marketItemc.RegisterRoutes(basepath)
 	marketCollectionc.RegisterRoutes(basepath)
 	checkinc.RegisterRoutes(basepath)
+	sellerc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run())
 }
