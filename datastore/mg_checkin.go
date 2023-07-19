@@ -54,9 +54,9 @@ func (ds DatastoreCheckinMG) FindByID(ctx context.Context, id *string) (*models.
 func (ds DatastoreCheckinMG) List(ctx context.Context, params enum.CheckinParams) ([]*models.Checkin, error) {
 	var checkins []*models.Checkin
 	filter := bson.D{{}}
-	opts := options.Find().SetSort(bson.D{{Key: "volume", Value: 1}})
-	if params.Sort == "volume" {
-		opts = options.Find().SetSort(bson.D{{Key: "volume", Value: -1}})
+	opts := options.Find().SetSort(bson.D{{Key: "number_checked", Value: 1}})
+	if params.Sort == "number_checked" {
+		opts = options.Find().SetSort(bson.D{{Key: "number_checked", Value: -1}})
 	}
 
 	cursor, err := ds.CheckinCollection.Find(ctx, filter, opts)
