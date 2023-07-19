@@ -55,6 +55,7 @@ type DatastoreMarketCollection interface {
 	List(ctx context.Context, params enum.MarketCollectionsParams) ([]*MarketCollection, error)
 	Update(ctx context.Context, params *MarketCollection) (*MarketCollection, error)
 	Delete(ctx context.Context, params *string) error
+	FindByAddress(ctx context.Context, tokenAddress *string) ([]*MarketCollection, error)
 }
 
 type DatastoreCheckin interface {

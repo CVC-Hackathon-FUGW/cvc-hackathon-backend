@@ -74,6 +74,12 @@ func (p *MarketCollectionService) Delete(id *string) error {
 	return err
 }
 
+func (p *MarketCollectionService) FindByAddress(tokenAddress *string) ([]*models.MarketCollection, error) {
+	ctx := p.ctx
+	items, err := p.dataStoreMarketCollection.FindByAddress(ctx, tokenAddress)
+	return items, err
+}
+
 func (p *MarketCollectionService) UploadFiles(uploadFileDir string) error {
 
 	session, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_S3_REGION"))})
