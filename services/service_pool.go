@@ -51,7 +51,7 @@ func (p *PoolService) Show(id *string) (*models.Pool, error) {
 	return item, err
 }
 
-func (p *PoolService) List(params enum.PoolParams) ([]*models.PoolWithLoanDetails, error) {
+func (p *PoolService) ListPoolsWithLoan(params enum.PoolParams) ([]*models.PoolWithLoanDetails, error) {
 	ctx := p.ctx
 	items := []*models.PoolWithLoanDetails{}
 	pools, err := p.dataStorePool.List(ctx, params)
@@ -75,6 +75,12 @@ func (p *PoolService) List(params enum.PoolParams) ([]*models.PoolWithLoanDetail
 		item.LoanCount = fmt.Sprintf("%d of %d offers taken", loanCount.TotalLoanGot, loanCount.TotalLoanInPool)
 		item.LoanMaxAmount = loanMaxAmount[0].Amount
 	}
+	return items, err
+}
+
+func (p *PoolService) ListPools(params enum.PoolParams) ([]*models.Pool, error) {
+	ctx := p.ctx
+	items, err := p.dataStorePool.List(ctx, params)
 	return items, err
 }
 

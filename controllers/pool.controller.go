@@ -66,12 +66,25 @@ func (uc *PoolController) GetPool(ctx *gin.Context) {
 	})
 }
 
-func (uc *PoolController) List(ctx *gin.Context) {
+func (uc *PoolController) ListPoolWithLoan(ctx *gin.Context) {
 	params := enum.PoolParams{
 		Name: ctx.Query("name"),
 	}
 
-	pools, err := uc.PoolService.List(params)
+	pools, err := uc.PoolService.ListPoolsWithLoan(params)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, pools)
+}
+
+func (uc *PoolController) ListPool(ctx *gin.Context) {
+	params := enum.PoolParams{
+		Name: ctx.Query("name"),
+	}
+
+	pools, err := uc.PoolService.ListPools(params)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
@@ -110,7 +123,8 @@ func (uc *PoolController) RegisterRoutes(rg *gin.RouterGroup) {
 	userroute := rg.Group("/pools")
 	userroute.POST("", uc.CreatePool)
 	userroute.GET("/:id", uc.GetPool)
-	userroute.GET("", uc.List)
+	userroute.GET("/loan", uc.ListPoolWithLoan)
+	userroute.GET("", uc.ListPool)
 	userroute.PATCH("", uc.UpdatePool)
 	userroute.DELETE("/:id", uc.DeletePool)
 }
