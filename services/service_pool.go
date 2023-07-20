@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
@@ -50,9 +51,30 @@ func (p *PoolService) Show(id *string) (*models.Pool, error) {
 	return item, err
 }
 
-func (p *PoolService) List(params enum.PoolParams) ([]*models.Pool, error) {
+func (p *PoolService) List(params enum.PoolParams) ([]*models.PoolWithLoanDetails, error) {
 	ctx := p.ctx
-	items, err := p.dataStorePool.List(ctx, params)
+	items := []*models.PoolWithLoanDetails{}
+	pools, err := p.dataStorePool.List(ctx, params)
+
+	for _, pool := range pools {
+		item := models.PoolWithLoanDetails{}
+		item.Pool = pool
+		items = append(items, &item)
+
+		poolIDstrinng := strconv.Itoa(pool.PoolId)
+		loanCount, err := p.dataStorePool.CountLoans(ctx, &poolIDstrinng)
+		if err != nil {
+			continue
+		}
+
+		loanMaxAmount, err := p.dataStorePool.MaxAmount(ctx, &poolIDstrinng)
+		if err != nil {
+			continue
+		}
+
+		item.LoanCount = fmt.Sprintf("%d of %d offers taken", loanCount.TotalLoanGot, loanCount.TotalLoanInPool)
+		item.LoanMaxAmount = loanMaxAmount[0].Amount
+	}
 	return items, err
 }
 
