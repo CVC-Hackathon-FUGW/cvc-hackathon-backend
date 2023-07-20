@@ -14,10 +14,11 @@ import (
 
 type DatastorePoolMG struct {
 	poolCollection *mongo.Collection
+	loanCollection *mongo.Collection
 }
 
-func NewDatastorePoolMG(poolCollection *mongo.Collection) *DatastorePoolMG {
-	return &DatastorePoolMG{poolCollection}
+func NewDatastorePoolMG(poolCollection *mongo.Collection, loanCollection *mongo.Collection) *DatastorePoolMG {
+	return &DatastorePoolMG{poolCollection, loanCollection}
 }
 
 var _ models.DatastorePool = (*DatastorePoolMG)(nil)
@@ -157,4 +158,83 @@ func (ds DatastorePoolMG) Delete(ctx context.Context, id *string) error {
 		return errors.New("no matched document found for delete")
 	}
 	return nil
+}
+
+func (ds DatastorePoolMG) CountLoans(ctx context.Context, poolId *string) (*enum.CountLoans, error) {
+	cursor, err := ds.loanCollection.Find(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+
+	count := enum.CountLoans{
+		TotalLoanInPool: 0,
+		TotalLoanGot:    0,
+	}
+
+	for cursor.Next(ctx) {
+		var loan models.Loan
+		err := cursor.Decode(&loan)
+		if err != nil {
+			return nil, err
+		}
+		if strconv.Itoa(*loan.PoolId) != *poolId {
+			continue
+		}
+		if *loan.State {
+			count.TotalLoanGot++
+		}
+		count.TotalLoanInPool++
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	return &count, nil
+}
+
+func (ds DatastorePoolMG) MaxAmount(ctx context.Context, poolId *string) ([]*models.Loan, error) {
+	var loans []*models.Loan
+	cursor, err := ds.loanCollection.Find(ctx, bson.D{{}})
+	if err != nil {
+		return nil, err
+	}
+
+	var max int64 = -1
+	for cursor.Next(ctx) {
+		var loan models.Loan
+		err := cursor.Decode(&loan)
+		if err != nil {
+			return nil, err
+		}
+		if strconv.Itoa(*loan.PoolId) != *poolId {
+			continue
+		}
+		if !loan.IsActive {
+			continue
+		}
+
+		if *loan.Amount == max {
+			loans = append(loans, &loan)
+		}
+
+		if *loan.Amount > max {
+			loans = []*models.Loan{&loan}
+			max = *loan.Amount
+		}
+
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	if len(loans) == 0 {
+		return nil, errors.New("documents not found")
+	}
+	return loans, nil
 }

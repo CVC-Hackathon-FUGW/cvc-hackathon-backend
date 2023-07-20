@@ -11,3 +11,9 @@ type Pool struct {
 	Image           *string `bson:"image" json:"image"`
 	IsActive        bool    `bson:"is_active" json:"is_active"`
 }
+
+type PoolWithLoanDetails struct {
+	Pool          *Pool  `json:"pool"`
+	LoanMaxAmount *int64 `json:"loan_max_amount"`
+	LoanCount     string `json:"loan_count"`
+}

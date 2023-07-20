@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
@@ -34,13 +35,35 @@ func (uc *PoolController) CreatePool(ctx *gin.Context) {
 }
 
 func (uc *PoolController) GetPool(ctx *gin.Context) {
-	var poolId string = ctx.Param("id")
-	user, err := uc.PoolService.Show(&poolId)
+	var poolID string = ctx.Param("id")
+	pool, err := uc.PoolService.Show(&poolID)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, user)
+
+	loanMaxAmount, err := uc.PoolService.MaxAmount(&poolID)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+
+	loanCount, err := uc.PoolService.CountLoans(&poolID)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+
+	poolwithloan := models.PoolWithLoanDetails{
+		LoanCount:     fmt.Sprintf("%d of %d offers taken", loanCount.TotalLoanGot, loanCount.TotalLoanInPool),
+		LoanMaxAmount: loanMaxAmount[0].Amount,
+		Pool:          pool,
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "success",
+		"data":    poolwithloan,
+	})
 }
 
 func (uc *PoolController) List(ctx *gin.Context) {

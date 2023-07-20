@@ -74,6 +74,18 @@ func (p *PoolService) Delete(id *string) error {
 	return err
 }
 
+func (p *PoolService) MaxAmount(id *string) ([]*models.Loan, error) {
+	ctx := p.ctx
+	items, err := p.dataStorePool.MaxAmount(ctx, id)
+	return items, err
+}
+
+func (p *PoolService) CountLoans(id *string) (*enum.CountLoans, error) {
+	ctx := p.ctx
+	items, err := p.dataStorePool.CountLoans(ctx, id)
+	return items, err
+}
+
 func (p *PoolService) UploadFiles(uploadFileDir string) error {
 
 	session, err := session.NewSession(&aws.Config{Region: aws.String(os.Getenv("AWS_S3_REGION"))})

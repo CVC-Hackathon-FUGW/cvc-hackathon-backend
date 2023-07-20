@@ -86,7 +86,8 @@ func init() {
 	uc = controllers.NewUser(us)
 
 	pools = mongoclient.Database("hackathon").Collection("pools")
-	dspools = datastore.NewDatastorePoolMG(pools)
+	loans = mongoclient.Database("hackathon").Collection("loans")
+	dspools = datastore.NewDatastorePoolMG(pools, loans)
 	ps := services.NewPoolService(ctx, dspools)
 	pc = controllers.NewPool(*ps)
 

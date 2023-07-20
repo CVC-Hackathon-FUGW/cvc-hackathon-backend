@@ -12,6 +12,8 @@ type DatastorePool interface {
 	List(ctx context.Context, params enum.PoolParams) ([]*Pool, error)
 	Update(ctx context.Context, params *Pool) (*Pool, error)
 	Delete(ctx context.Context, params *string) error
+	MaxAmount(ctx context.Context, poolId *string) ([]*Loan, error)
+	CountLoans(ctx context.Context, poolId *string) (*enum.CountLoans, error)
 }
 
 type DatastoreLoan interface {

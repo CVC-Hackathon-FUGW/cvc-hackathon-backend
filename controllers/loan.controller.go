@@ -80,8 +80,8 @@ func (uc *LoanController) DeleteLoan(ctx *gin.Context) {
 }
 
 func (uc *LoanController) MaxAMount(ctx *gin.Context) {
-	var pool_id string = ctx.Param("id")
-	loan, err := uc.LoanService.MaxAmount(&pool_id)
+	var poolID string = ctx.Param("id")
+	loan, err := uc.LoanService.MaxAmount(&poolID)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
