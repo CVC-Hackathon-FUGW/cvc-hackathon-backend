@@ -231,6 +231,12 @@ func (ds DatastoreLoanMG) CountLoans(ctx context.Context, poolId *string) (*enum
 		if strconv.Itoa(*loan.PoolId) != *poolId {
 			continue
 		}
+
+		loanstate := loan.State
+		if loanstate == nil {
+			continue
+		}
+
 		if *loan.State {
 			count.TotalLoanGot++
 		}
