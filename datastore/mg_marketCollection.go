@@ -100,12 +100,17 @@ func (ds DatastoreMarketCollectionMG) Update(ctx context.Context, params *models
 		marketCollectionDB.Image = params.Image
 	}
 
+	if params.Volume != nil {
+		marketCollectionDB.Volume = params.Volume
+	}
+
 	filter := bson.D{primitive.E{Key: "collection_id", Value: params.CollectionId}}
 	update := bson.D{
 		primitive.E{Key: "$set", Value: bson.D{
 			primitive.E{Key: "token_address", Value: marketCollectionDB.TokenAddress},
 			primitive.E{Key: "collection_name", Value: marketCollectionDB.CollectionName},
 			primitive.E{Key: "image", Value: marketCollectionDB.Image},
+			primitive.E{Key: "volume", Value: marketCollectionDB.Volume},
 		}}}
 
 	var MarketCollectionUpdated *models.MarketCollection
