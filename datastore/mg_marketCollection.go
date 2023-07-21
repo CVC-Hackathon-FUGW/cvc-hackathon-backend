@@ -139,7 +139,7 @@ func (ds DatastoreMarketCollectionMG) Delete(ctx context.Context, id *string) er
 }
 
 func (ds DatastoreMarketCollectionMG) FindByAddress(ctx context.Context, tokenAddress *string) ([]*models.MarketCollection, error) {
-	filter := bson.D{{Key: "address", Value: tokenAddress}}
+	filter := bson.D{{Key: "token_address", Value: tokenAddress}}
 
 	var marketCollections []*models.MarketCollection
 	cursor, err := ds.marketCollectionCollection.Find(ctx, filter)
