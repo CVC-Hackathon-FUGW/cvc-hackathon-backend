@@ -57,14 +57,13 @@ func (mc *MarketItemController) UpdateMarketItem(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	marketItemUpdate, err := mc.MarketItemService.Update(&marketItem)
+	_, err := mc.MarketItemService.Update(&marketItem)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    marketItemUpdate,
 	})
 }
 

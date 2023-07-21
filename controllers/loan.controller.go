@@ -58,14 +58,13 @@ func (uc *LoanController) UpdateLoan(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	loanupdate, err := uc.LoanService.Update(&loan)
+	_, err := uc.LoanService.Update(&loan)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    loanupdate,
 	})
 }
 

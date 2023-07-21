@@ -61,14 +61,13 @@ func (mc *MarketCollectionController) UpdateMarketCollection(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	marketCollectionUpdate, err := mc.MarketCollectionService.Update(&marketCollection)
+	_, err := mc.MarketCollectionService.Update(&marketCollection)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    marketCollectionUpdate,
 	})
 }
 

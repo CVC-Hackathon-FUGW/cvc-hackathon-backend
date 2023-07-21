@@ -98,14 +98,14 @@ func (uc *PoolController) UpdatePool(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	poolupdate, err := uc.PoolService.Update(&pool)
+	_, err := uc.PoolService.Update(&pool)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "success",
-		"data":    poolupdate,
 	})
 }
 
