@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/services"
 	"github.com/gin-gonic/gin"
@@ -69,7 +70,21 @@ func (uc *LoanController) UpdateLoan(ctx *gin.Context) {
 }
 
 func (uc *LoanController) DeleteLoan(ctx *gin.Context) {
+	params := enum.LoanParams{
+		WithPool: ctx.GetBool("with-pool"),
+	}
+
 	var loan_id string = ctx.Param("id")
+	if params.WithPool {
+		err := uc.LoanService.DeleteWithUpdatePool(&loan_id)
+		if err != nil {
+			ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+		return
+	}
+
 	err := uc.LoanService.Delete(&loan_id)
 	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
@@ -105,12 +120,12 @@ func (uc *LoanController) CountLoan(ctx *gin.Context) {
 }
 
 func (uc *LoanController) RegisterRoutes(rg *gin.RouterGroup) {
-	userroute := rg.Group("/loans")
-	userroute.POST("", uc.CreateLoan)
-	userroute.GET("/:id", uc.GetLoan)
-	userroute.GET("", uc.List)
-	userroute.PATCH("", uc.UpdateLoan)
-	userroute.DELETE("/:id", uc.DeleteLoan)
-	userroute.GET("/pool/:id/max-amount", uc.MaxAMount)
-	userroute.GET("/pool/:id/count", uc.CountLoan)
+	route := rg.Group("/loans")
+	route.POST("", uc.CreateLoan)
+	route.GET("/:id", uc.GetLoan)
+	route.GET("", uc.List)
+	route.PATCH("", uc.UpdateLoan)
+	route.DELETE("/:id", uc.DeleteLoan)
+	route.GET("/pool/:id/max-amount", uc.MaxAMount)
+	route.GET("/pool/:id/count", uc.CountLoan)
 }

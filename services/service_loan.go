@@ -47,7 +47,7 @@ func (p *LoanService) Create(loan *models.Loan) error {
 
 	_, err = p.datastorePool.Update(ctx, poolUpdate)
 	if err != nil {
-		return errors.New("errors update pool amount")
+		return err
 	}
 
 	_, err = p.datastoreLoan.Create(ctx, loan)
@@ -77,6 +77,40 @@ func (p *LoanService) Update(params *models.Loan) (*models.Loan, error) {
 
 	item, err := p.datastoreLoan.Update(ctx, params)
 	return item, err
+}
+
+func (p *LoanService) DeleteWithUpdatePool(id *string) error {
+	ctx := p.ctx
+	loan, err := p.datastoreLoan.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	err = p.datastoreLoan.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	poolIdString := strconv.Itoa(*loan.PoolId)
+	pool, err := p.datastorePool.FindByID(ctx, &poolIdString)
+	if err != nil {
+		return errors.New("invalid poolID")
+	}
+
+	// update pool
+	var poolUpdate *models.Pool
+	updateTotal := *pool.TotalPoolAmount - *loan.Amount
+	if loan.PoolId != nil {
+		poolUpdate.PoolId = pool.PoolId
+		poolUpdate.TotalPoolAmount = &(updateTotal)
+	}
+
+	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (p *LoanService) Delete(id *string) error {
