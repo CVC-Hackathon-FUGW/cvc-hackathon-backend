@@ -9,7 +9,7 @@ type MarketItem struct {
 	Price             *int64  `bson:"price" json:"price"`
 	IsOfferable       *bool   `bson:"is_offerable" json:"is_offerable"`
 	AcceptVisaPayment *bool   `bson:"accept_visa_payment" json:"accept_visa_payment"` //visa or paypal
-	CurrentOfferValue *int    `bson:"current_offer_value" json:"current_offer_value"`
+	CurrentOfferValue *int64  `bson:"current_offer_value" json:"current_offer_value"`
 	CurrentOfferer    *string `bson:"current_offerer" json:"current_offerer"`
 	MerchantId        *string `bson:"merchant_id" json:"merchant_id"`
 	Sold              *bool   `bson:"sold" json:"sold"`

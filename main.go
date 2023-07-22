@@ -115,7 +115,7 @@ func init() {
 	bors := services.NewBorrowerService(ctx, dsborrowers)
 	borc = controllers.NewBorrowerController(*bors)
 
-	marketItemService := services.NewMarketItemService(ctx, dsMarketItem)
+	marketItemService := services.NewMarketItemService(ctx, dsMarketItem, dsMarketCollection)
 	marketItemc = controllers.NewMarketItemController(*marketItemService)
 
 	marketCollectionService := services.NewMarketCollectionService(ctx, dsMarketCollection)

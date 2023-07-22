@@ -75,6 +75,25 @@ func (p *LoanService) Update(params *models.Loan) (*models.Loan, error) {
 		}
 	}
 
+	poolIdString := strconv.Itoa(*params.PoolId)
+	pool, err := p.datastorePool.FindByID(ctx, &poolIdString)
+	if err != nil {
+		return nil, errors.New("invalid poolID")
+	}
+
+	// update pool
+	var poolUpdate *models.Pool
+	updateTotal := *pool.TotalPoolAmount - *params.Amount
+	if params.PoolId != nil {
+		poolUpdate.PoolId = pool.PoolId
+		poolUpdate.TotalPoolAmount = &(updateTotal)
+	}
+
+	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	if err != nil {
+		return nil, err
+	}
+
 	item, err := p.datastoreLoan.Update(ctx, params)
 	return item, err
 }
