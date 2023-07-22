@@ -87,42 +87,43 @@ func init() {
 
 	pools = mongoclient.Database("hackathon").Collection("pools")
 	loans = mongoclient.Database("hackathon").Collection("loans")
+	lenders = mongoclient.Database("hackathon").Collection("lenders")
+	borrowers = mongoclient.Database("hackathon").Collection("borrowers")
+	marketItems = mongoclient.Database("hackathon").Collection("marketItems")
+	marketCollections = mongoclient.Database("hackathon").Collection("marketCollections")
+	checkins = mongoclient.Database("hackathon").Collection("checkins")
+	sellers = mongoclient.Database("hackathon").Collection("sellers")
+
 	dspools = datastore.NewDatastorePoolMG(pools, loans)
+	dsloans = datastore.NewDatastoreLoanMG(loans)
+	dslenders = datastore.NewDatastoreLenderMG(lenders)
+	dsborrowers = datastore.NewDatastoreBorrowerMG(borrowers)
+	dsMarketItem = datastore.NewDatastoreMarketItemMG(marketItems)
+	dsMarketCollection = datastore.NewDatastoreMarketCollectionMG(marketCollections)
+	dsCheckin = datastore.NewDatastoreCheckinMG(checkins)
+	dsSellers = datastore.NewDatastoreSellerMG(sellers)
+
 	ps := services.NewPoolService(ctx, dspools)
 	pc = controllers.NewPool(*ps)
 
-	loans = mongoclient.Database("hackathon").Collection("loans")
-	dsloans = datastore.NewDatastoreLoanMG(loans)
-	ls := services.NewLoanService(ctx, dsloans)
+	ls := services.NewLoanService(ctx, dsloans, dspools)
 	lc = controllers.NewLoanController(*ls)
 
-	lenders = mongoclient.Database("hackathon").Collection("lenders")
-	dslenders = datastore.NewDatastoreLenderMG(lenders)
 	lens := services.NewLenderService(ctx, dslenders)
 	lenc = controllers.NewLenderController(*lens)
 
-	borrowers = mongoclient.Database("hackathon").Collection("borrowers")
-	dsborrowers = datastore.NewDatastoreBorrowerMG(borrowers)
 	bors := services.NewBorrowerService(ctx, dsborrowers)
 	borc = controllers.NewBorrowerController(*bors)
 
-	marketItems = mongoclient.Database("hackathon").Collection("marketItems")
-	dsMarketItem = datastore.NewDatastoreMarketItemMG(marketItems)
 	marketItemService := services.NewMarketItemService(ctx, dsMarketItem)
 	marketItemc = controllers.NewMarketItemController(*marketItemService)
 
-	marketCollections = mongoclient.Database("hackathon").Collection("marketCollections")
-	dsMarketCollection = datastore.NewDatastoreMarketCollectionMG(marketCollections)
 	marketCollectionService := services.NewMarketCollectionService(ctx, dsMarketCollection)
 	marketCollectionc = controllers.NewMarketCollectionController(*marketCollectionService)
 
-	checkins = mongoclient.Database("hackathon").Collection("checkins")
-	dsCheckin = datastore.NewDatastoreCheckinMG(checkins)
 	checkinService := services.NewCheckinService(ctx, dsCheckin)
 	checkinc = controllers.NewCheckinController(*checkinService)
 
-	sellers = mongoclient.Database("hackathon").Collection("sellers")
-	dsSellers = datastore.NewDatastoreSellerMG(sellers)
 	sellersService := services.NewSellerService(ctx, dsSellers)
 	sellerc = controllers.NewSellerController(*sellersService)
 
