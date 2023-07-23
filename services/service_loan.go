@@ -149,3 +149,34 @@ func (p *LoanService) CountLoans(id *string) (*enum.CountLoans, error) {
 	items, err := p.datastoreLoan.CountLoans(ctx, id)
 	return items, err
 }
+
+func (p *LoanService) BorrowserTakeLoan(params *models.Loan) error {
+	ctx := p.ctx
+
+	if params.TokenAddress != nil {
+		if ok := utils.ValidateAddress(*params.TokenAddress); !ok {
+			return errors.New("invalid token address")
+		}
+	}
+
+	poolIdString := strconv.Itoa(*params.PoolId)
+	pool, err := p.datastorePool.FindByID(ctx, &poolIdString)
+	if err != nil {
+		return errors.New("invalid poolID")
+	}
+
+	// update pool
+	var poolUpdate *models.Pool
+	updateTotal := *pool.TotalPoolAmount - *params.Amount
+	if params.PoolId != nil {
+		poolUpdate.PoolId = pool.PoolId
+		poolUpdate.TotalPoolAmount = &(updateTotal)
+	}
+
+	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
