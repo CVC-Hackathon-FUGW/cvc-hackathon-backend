@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/models"
@@ -12,12 +13,14 @@ import (
 type LoanService struct {
 	ctx           context.Context
 	datastoreLoan models.DatastoreLoan
+	datastorePool models.DatastorePool
 }
 
-func NewLoanService(ctx context.Context, datastoreLoan models.DatastoreLoan) *LoanService {
+func NewLoanService(ctx context.Context, datastoreLoan models.DatastoreLoan, datastorePool models.DatastorePool) *LoanService {
 	return &LoanService{
 		ctx:           ctx,
 		datastoreLoan: datastoreLoan,
+		datastorePool: datastorePool,
 	}
 }
 
@@ -28,7 +31,26 @@ func (p *LoanService) Create(loan *models.Loan) error {
 		return errors.New("invalid token address")
 	}
 
-	_, err := p.datastoreLoan.Create(ctx, loan)
+	poolIdString := strconv.Itoa(*loan.PoolId)
+	pool, err := p.datastorePool.FindByID(ctx, &poolIdString)
+	if err != nil {
+		return errors.New("invalid poolID")
+	}
+
+	// update pool
+	var poolUpdate *models.Pool
+	updateTotal := *pool.TotalPoolAmount + *loan.Amount
+	if loan.PoolId != nil {
+		poolUpdate.PoolId = pool.PoolId
+		poolUpdate.TotalPoolAmount = &(updateTotal)
+	}
+
+	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	if err != nil {
+		return err
+	}
+
+	_, err = p.datastoreLoan.Create(ctx, loan)
 	return err
 }
 
@@ -53,8 +75,61 @@ func (p *LoanService) Update(params *models.Loan) (*models.Loan, error) {
 		}
 	}
 
+	poolIdString := strconv.Itoa(*params.PoolId)
+	pool, err := p.datastorePool.FindByID(ctx, &poolIdString)
+	if err != nil {
+		return nil, errors.New("invalid poolID")
+	}
+
+	// update pool
+	var poolUpdate *models.Pool
+	updateTotal := *pool.TotalPoolAmount - *params.Amount
+	if params.PoolId != nil {
+		poolUpdate.PoolId = pool.PoolId
+		poolUpdate.TotalPoolAmount = &(updateTotal)
+	}
+
+	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	if err != nil {
+		return nil, err
+	}
+
 	item, err := p.datastoreLoan.Update(ctx, params)
 	return item, err
+}
+
+func (p *LoanService) DeleteWithUpdatePool(id *string) error {
+	ctx := p.ctx
+	loan, err := p.datastoreLoan.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	err = p.datastoreLoan.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	poolIdString := strconv.Itoa(*loan.PoolId)
+	pool, err := p.datastorePool.FindByID(ctx, &poolIdString)
+	if err != nil {
+		return errors.New("invalid poolID")
+	}
+
+	// update pool
+	var poolUpdate *models.Pool
+	updateTotal := *pool.TotalPoolAmount - *loan.Amount
+	if loan.PoolId != nil {
+		poolUpdate.PoolId = pool.PoolId
+		poolUpdate.TotalPoolAmount = &(updateTotal)
+	}
+
+	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (p *LoanService) Delete(id *string) error {
@@ -73,4 +148,35 @@ func (p *LoanService) CountLoans(id *string) (*enum.CountLoans, error) {
 	ctx := p.ctx
 	items, err := p.datastoreLoan.CountLoans(ctx, id)
 	return items, err
+}
+
+func (p *LoanService) BorrowserTakeLoan(params *models.Loan) error {
+	ctx := p.ctx
+
+	if params.TokenAddress != nil {
+		if ok := utils.ValidateAddress(*params.TokenAddress); !ok {
+			return errors.New("invalid token address")
+		}
+	}
+
+	poolIdString := strconv.Itoa(*params.PoolId)
+	pool, err := p.datastorePool.FindByID(ctx, &poolIdString)
+	if err != nil {
+		return errors.New("invalid poolID")
+	}
+
+	// update pool
+	var poolUpdate *models.Pool
+	updateTotal := *pool.TotalPoolAmount - *params.Amount
+	if params.PoolId != nil {
+		poolUpdate.PoolId = pool.PoolId
+		poolUpdate.TotalPoolAmount = &(updateTotal)
+	}
+
+	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	if err != nil {
+		return err
+	}
+
+	return err
 }

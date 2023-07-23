@@ -86,12 +86,35 @@ func (mc *MarketItemController) FindByAddress(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, markets)
 }
+
+func (mc *MarketItemController) BuyMarketItem(ctx *gin.Context) {
+	var marketItem_id string = ctx.Param("id")
+	err := mc.MarketItemService.BuyMarketItem(&marketItem_id)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
+func (mc *MarketItemController) OfferMarketItem(ctx *gin.Context) {
+	var marketItem_id string = ctx.Param("id")
+	err := mc.MarketItemService.OfferMarketItem(&marketItem_id)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
 func (mc *MarketItemController) RegisterRoutes(rg *gin.RouterGroup) {
-	userroute := rg.Group("/marketItems")
-	userroute.POST("", mc.CreateMarketItem)
-	userroute.GET("/:id", mc.GetMarketItem)
-	userroute.GET("", mc.List)
-	userroute.PATCH("", mc.UpdateMarketItem)
-	userroute.DELETE("/:id", mc.DeleteMarketItem)
-	userroute.GET("/address/:address", mc.FindByAddress)
+	route := rg.Group("/marketItems")
+	route.POST("", mc.CreateMarketItem)
+	route.GET("/:id", mc.GetMarketItem)
+	route.GET("", mc.List)
+	route.PATCH("", mc.UpdateMarketItem)
+	route.DELETE("/:id", mc.DeleteMarketItem)
+	route.GET("/address/:address", mc.FindByAddress)
+	route.POST("/buy/:id", mc.BuyMarketItem)
+	route.POST("/offer/:id", mc.OfferMarketItem)
 }

@@ -17,3 +17,7 @@ type CountLoans struct {
 	TotalLoanInPool int
 	TotalLoanGot    int
 }
+
+type LoanParams struct {
+	WithPool bool
+}
