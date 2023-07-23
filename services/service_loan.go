@@ -38,14 +38,10 @@ func (p *LoanService) Create(loan *models.Loan) error {
 	}
 
 	// update pool
-	var poolUpdate *models.Pool
 	updateTotal := *pool.TotalPoolAmount + *loan.Amount
-	if loan.PoolId != nil {
-		poolUpdate.PoolId = pool.PoolId
-		poolUpdate.TotalPoolAmount = &(updateTotal)
-	}
+	pool.TotalPoolAmount = &updateTotal
 
-	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	_, err = p.datastorePool.Update(ctx, pool)
 	if err != nil {
 		return err
 	}
@@ -82,14 +78,13 @@ func (p *LoanService) Update(params *models.Loan) (*models.Loan, error) {
 	}
 
 	// update pool
-	var poolUpdate *models.Pool
+
 	updateTotal := *pool.TotalPoolAmount - *params.Amount
 	if params.PoolId != nil {
-		poolUpdate.PoolId = pool.PoolId
-		poolUpdate.TotalPoolAmount = &(updateTotal)
+		pool.TotalPoolAmount = &(updateTotal)
 	}
 
-	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	_, err = p.datastorePool.Update(ctx, pool)
 	if err != nil {
 		return nil, err
 	}
@@ -117,14 +112,12 @@ func (p *LoanService) DeleteWithUpdatePool(id *string) error {
 	}
 
 	// update pool
-	var poolUpdate *models.Pool
 	updateTotal := *pool.TotalPoolAmount - *loan.Amount
 	if loan.PoolId != nil {
-		poolUpdate.PoolId = pool.PoolId
-		poolUpdate.TotalPoolAmount = &(updateTotal)
+		pool.TotalPoolAmount = &(updateTotal)
 	}
 
-	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	_, err = p.datastorePool.Update(ctx, pool)
 	if err != nil {
 		return err
 	}
@@ -166,14 +159,12 @@ func (p *LoanService) BorrowserTakeLoan(params *models.Loan) error {
 	}
 
 	// update pool
-	var poolUpdate *models.Pool
 	updateTotal := *pool.TotalPoolAmount - *params.Amount
 	if params.PoolId != nil {
-		poolUpdate.PoolId = pool.PoolId
-		poolUpdate.TotalPoolAmount = &(updateTotal)
+		pool.TotalPoolAmount = &(updateTotal)
 	}
 
-	_, err = p.datastorePool.Update(ctx, poolUpdate)
+	_, err = p.datastorePool.Update(ctx, pool)
 	if err != nil {
 		return err
 	}
