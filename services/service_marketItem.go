@@ -89,14 +89,20 @@ func (p *MarketItemService) BuyMarketItem(id *string) error {
 		return err
 	}
 
-	marketCollection, err := p.datastoreMarketCollection.FindByID(ctx, id)
+	marketCollections, err := p.datastoreMarketCollection.FindByAddress(ctx, marketItem.TokenAddress)
 	if err != nil {
 		return err
 	}
 
-	vollumUpdate := *marketCollection.Volume + *marketItem.Price
-	marketCollection.Volume = &vollumUpdate
-	_, err = p.datastoreMarketCollection.Update(ctx, marketCollection)
+	if marketCollections == nil {
+		return errors.New("not found market collections by address")
+	}
+
+	for _, marketCollection := range marketCollections {
+		vollumUpdate := *marketCollection.Volume + *marketItem.Price
+		marketCollection.Volume = &vollumUpdate
+		_, err = p.datastoreMarketCollection.Update(ctx, marketCollection)
+	}
 
 	return err
 }
@@ -113,14 +119,19 @@ func (p *MarketItemService) OfferMarketItem(id *string) error {
 		return err
 	}
 
-	marketCollection, err := p.datastoreMarketCollection.FindByID(ctx, id)
+	marketCollections, err := p.datastoreMarketCollection.FindByAddress(ctx, marketItem.TokenAddress)
 	if err != nil {
 		return err
 	}
 
-	vollumUpdate := *marketCollection.Volume + *marketItem.CurrentOfferValue
-	marketCollection.Volume = &vollumUpdate
-	_, err = p.datastoreMarketCollection.Update(ctx, marketCollection)
+	if marketCollections == nil {
+		return errors.New("not found market collections by address")
+	}
 
+	for _, marketCollection := range marketCollections {
+		vollumUpdate := *marketCollection.Volume + *marketItem.Price
+		marketCollection.Volume = &vollumUpdate
+		_, err = p.datastoreMarketCollection.Update(ctx, marketCollection)
+	}
 	return err
 }
