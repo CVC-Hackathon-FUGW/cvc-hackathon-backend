@@ -172,5 +172,6 @@ func (p *LoanService) BorrowserTakeLoan(params *models.Loan) error {
 		return err
 	}
 
+	_, err = p.datastoreLoan.Update(ctx, params)
 	return err
 }
