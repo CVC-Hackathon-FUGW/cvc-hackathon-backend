@@ -70,11 +70,13 @@ func (uc *LoanController) UpdateLoan(ctx *gin.Context) {
 }
 
 func (uc *LoanController) DeleteLoan(ctx *gin.Context) {
+	_, ok := ctx.GetQuery("with-pool")
 	params := enum.LoanParams{
-		WithPool: ctx.GetBool("with-pool"),
+		WithPool: ok,
 	}
 
 	var loan_id string = ctx.Param("id")
+
 	if params.WithPool {
 		err := uc.LoanService.DeleteWithUpdatePool(&loan_id)
 		if err != nil {

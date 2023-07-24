@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/CVC-Hackathon-FUGW/cvc-hackathon-backend/enum"
@@ -113,9 +114,11 @@ func (p *LoanService) DeleteWithUpdatePool(id *string) error {
 
 	// update pool
 	updateTotal := *pool.TotalPoolAmount - *loan.Amount
+	fmt.Println("poolID", loan.PoolId)
 	if loan.PoolId != nil {
-		pool.TotalPoolAmount = &(updateTotal)
+		pool.TotalPoolAmount = &updateTotal
 	}
+	fmt.Println("pool total", pool.TotalPoolAmount)
 
 	_, err = p.datastorePool.Update(ctx, pool)
 	if err != nil {
