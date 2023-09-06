@@ -58,6 +58,10 @@ var (
 	dsSellers *datastore.DatastoreSellerMG
 	sellerc   controllers.SellerController
 
+	boxes   *mongo.Collection
+	dsBoxes *datastore.DatastoreBoxMG
+	boxc    controllers.BoxController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -93,6 +97,7 @@ func init() {
 	marketCollections = mongoclient.Database("hackathon").Collection("marketCollections")
 	checkins = mongoclient.Database("hackathon").Collection("checkins")
 	sellers = mongoclient.Database("hackathon").Collection("sellers")
+	boxes = mongoclient.Database("hackathon").Collection("boxes")
 
 	dspools = datastore.NewDatastorePoolMG(pools, loans)
 	dsloans = datastore.NewDatastoreLoanMG(loans)
@@ -102,6 +107,7 @@ func init() {
 	dsMarketCollection = datastore.NewDatastoreMarketCollectionMG(marketCollections)
 	dsCheckin = datastore.NewDatastoreCheckinMG(checkins)
 	dsSellers = datastore.NewDatastoreSellerMG(sellers)
+	dsBoxes = datastore.NewDatastoreBoxMG(boxes)
 
 	ps := services.NewPoolService(ctx, dspools)
 	pc = controllers.NewPool(*ps)
@@ -127,6 +133,9 @@ func init() {
 	sellersService := services.NewSellerService(ctx, dsSellers)
 	sellerc = controllers.NewSellerController(*sellersService)
 
+	boxService := services.NewBoxService(ctx, dsBoxes)
+	boxc = controllers.NewBoxController(*boxService)
+
 }
 
 func main() {
@@ -146,6 +155,7 @@ func main() {
 	marketCollectionc.RegisterRoutes(basepath)
 	checkinc.RegisterRoutes(basepath)
 	sellerc.RegisterRoutes(basepath)
+	boxc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run())
 }

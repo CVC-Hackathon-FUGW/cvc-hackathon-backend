@@ -34,6 +34,14 @@ type DatastoreLender interface {
 	Delete(ctx context.Context, params *string) error
 }
 
+type DatastoreBox interface {
+	Create(ctx context.Context, params *Box) (*Box, error)
+	FindByID(ctx context.Context, id *string) (*Box, error)
+	List(ctx context.Context) ([]*Box, error)
+	Update(ctx context.Context, params *Box) (*Box, error)
+	Delete(ctx context.Context, params *string) error
+}
+
 type DatastoreBorrower interface {
 	Create(ctx context.Context, params *Borrower) (*Borrower, error)
 	FindByID(ctx context.Context, id *string) (*Borrower, error)
