@@ -62,6 +62,18 @@ var (
 	dsBoxes *datastore.DatastoreBoxMG
 	boxc    controllers.BoxController
 
+	projects   *mongo.Collection
+	dsProjects *datastore.DatastoreProjectMG
+	projectc   controllers.ProjectController
+
+	packages   *mongo.Collection
+	dsPackages *datastore.DatastorePackageMG
+	packagec   controllers.PackageController
+
+	participants   *mongo.Collection
+	dsParticipants *datastore.DatastoreParticipantMG
+	participantc   controllers.ParticipantController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -98,6 +110,9 @@ func init() {
 	checkins = mongoclient.Database("hackathon").Collection("checkins")
 	sellers = mongoclient.Database("hackathon").Collection("sellers")
 	boxes = mongoclient.Database("hackathon").Collection("boxes")
+	projects = mongoclient.Database("hackathon").Collection("projects")
+	packages = mongoclient.Database("hackathon").Collection("packages")
+	participants = mongoclient.Database("hackathon").Collection("participants")
 
 	dspools = datastore.NewDatastorePoolMG(pools, loans)
 	dsloans = datastore.NewDatastoreLoanMG(loans)
@@ -108,6 +123,9 @@ func init() {
 	dsCheckin = datastore.NewDatastoreCheckinMG(checkins)
 	dsSellers = datastore.NewDatastoreSellerMG(sellers)
 	dsBoxes = datastore.NewDatastoreBoxMG(boxes)
+	dsProjects = datastore.NewDatastoreProjectMG(projects)
+	dsPackages = datastore.NewDatastorePackageMG(packages)
+	dsParticipants = datastore.NewDatastoreParticipantMG(participants)
 
 	ps := services.NewPoolService(ctx, dspools)
 	pc = controllers.NewPool(*ps)
@@ -136,6 +154,14 @@ func init() {
 	boxService := services.NewBoxService(ctx, dsBoxes)
 	boxc = controllers.NewBoxController(*boxService)
 
+	projectService := services.NewProjectService(ctx, dsProjects)
+	projectc = controllers.NewProjectController(*projectService)
+
+	packageService := services.NewPackageService(ctx, dsPackages)
+	packagec = controllers.NewPackageController(*packageService)
+
+	participantService := services.NewParticipantService(ctx, dsParticipants)
+	participantc = controllers.NewParticipantController(*participantService)
 }
 
 func main() {
@@ -156,6 +182,9 @@ func main() {
 	checkinc.RegisterRoutes(basepath)
 	sellerc.RegisterRoutes(basepath)
 	boxc.RegisterRoutes(basepath)
+	projectc.RegisterRoutes(basepath)
+	packagec.RegisterRoutes(basepath)
+	participantc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run())
 }

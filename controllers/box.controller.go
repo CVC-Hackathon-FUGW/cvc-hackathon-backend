@@ -80,6 +80,6 @@ func (uc *BoxController) RegisterRoutes(router *gin.RouterGroup) {
 	router.POST("/box", uc.CreateBox)
 	router.GET("/box/:id", uc.GetBox)
 	router.GET("/box", uc.List)
-	router.PUT("/box", uc.UpdateBox)
+	router.PATCH("/box", uc.UpdateBox)
 	router.DELETE("/box/:id", uc.DeleteBox)
 }

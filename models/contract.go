@@ -42,6 +42,30 @@ type DatastoreBox interface {
 	Delete(ctx context.Context, params *string) error
 }
 
+type DatastoreProject interface {
+	Create(ctx context.Context, params *Project) (*Project, error)
+	FindByID(ctx context.Context, id *string) (*Project, error)
+	List(ctx context.Context) ([]*Project, error)
+	Update(ctx context.Context, params *Project) (*Project, error)
+	Delete(ctx context.Context, params *string) error
+}
+
+type DatastorePackage interface {
+	Create(ctx context.Context, params *Package) (*Package, error)
+	FindByID(ctx context.Context, id *string) (*Package, error)
+	List(ctx context.Context) ([]*Package, error)
+	Update(ctx context.Context, params *Package) (*Package, error)
+	Delete(ctx context.Context, params *string) error
+}
+
+type DatastoreParticipant interface {
+	Create(ctx context.Context, params *Participant) (*Participant, error)
+	FindByID(ctx context.Context, id *string) (*Participant, error)
+	List(ctx context.Context) ([]*Participant, error)
+	Update(ctx context.Context, params *Participant) (*Participant, error)
+	Delete(ctx context.Context, params *string) error
+}
+
 type DatastoreBorrower interface {
 	Create(ctx context.Context, params *Borrower) (*Borrower, error)
 	FindByID(ctx context.Context, id *string) (*Borrower, error)
