@@ -84,8 +84,12 @@ func (ds DatastorePackageMG) Update(ctx context.Context, params *models.Package)
 		return nil, err
 	}
 
-	if params.ProjectId != nil {
-		pkg.ProjectId = params.ProjectId
+	if params.ProjectName != nil {
+		pkg.ProjectName = params.ProjectName
+	}
+
+	if params.PackageImage != nil {
+		pkg.PackageImage = params.PackageImage
 	}
 
 	if params.PackageName != nil {
@@ -106,7 +110,8 @@ func (ds DatastorePackageMG) Update(ctx context.Context, params *models.Package)
 
 	filter := bson.D{primitive.E{Key: "package_id", Value: params.PackageId}}
 	update := bson.D{primitive.E{Key: "$set", Value: bson.D{
-		primitive.E{Key: "project_id", Value: pkg.ProjectId},
+		primitive.E{Key: "project_name", Value: pkg.ProjectName},
+		primitive.E{Key: "package_image", Value: pkg.PackageImage},
 		primitive.E{Key: "package_price", Value: pkg.PackageName},
 		primitive.E{Key: "package_description", Value: pkg.PackageDescription},
 		primitive.E{Key: "package_price", Value: pkg.PackagePrice},
