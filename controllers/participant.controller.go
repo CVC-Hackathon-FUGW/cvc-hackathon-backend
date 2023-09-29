@@ -78,10 +78,26 @@ func (uc *ParticipantController) DeleteParticipant(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
+func (uc *ParticipantController) Invest(ctx *gin.Context) {
+	var participant models.Participant
+	if err := ctx.ShouldBindJSON(&participant); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	err := uc.ParticipantService.Invest(&participant)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+}
+
 func (uc *ParticipantController) RegisterRoutes(router *gin.RouterGroup) {
 	router.POST("/participant", uc.CreateParticipant)
 	router.GET("/participant/:id", uc.GetParticipant)
 	router.GET("/participant", uc.List)
 	router.PATCH("/participant", uc.UpdateParticipant)
 	router.DELETE("/participant/:id", uc.DeleteParticipant)
+	router.POST("/participant/invest", uc.Invest)
 }

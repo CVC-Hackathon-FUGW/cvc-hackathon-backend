@@ -160,7 +160,7 @@ func init() {
 	packageService := services.NewPackageService(ctx, dsPackages)
 	packagec = controllers.NewPackageController(*packageService)
 
-	participantService := services.NewParticipantService(ctx, dsParticipants)
+	participantService := services.NewParticipantService(ctx, dsParticipants, dsProjects)
 	participantc = controllers.NewParticipantController(*participantService)
 }
 

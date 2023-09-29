@@ -88,6 +88,10 @@ func (ds DatastoreParticipantMG) Update(ctx context.Context, params *models.Part
 		participant.ProjectName = params.ProjectName
 	}
 
+	if params.ProjectId != nil {
+		participant.ProjectId = params.ProjectId
+	}
+
 	if params.FundAttended != nil {
 		participant.FundAttended = params.FundAttended
 	}
@@ -98,6 +102,9 @@ func (ds DatastoreParticipantMG) Update(ctx context.Context, params *models.Part
 
 	filter := bson.D{primitive.E{Key: "participant_id", Value: params.ParticipantId}}
 	update := bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{
+			Key: "project_id", Value: participant.ProjectId,
+		},
 		primitive.E{Key: "project_name", Value: participant.ProjectName},
 		primitive.E{Key: "fund_attended", Value: participant.FundAttended},
 		primitive.E{Key: "participant_address", Value: participant.ParticipantAddress},
