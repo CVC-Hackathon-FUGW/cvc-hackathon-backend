@@ -66,6 +66,14 @@ type DatastoreParticipant interface {
 	Delete(ctx context.Context, params *string) error
 }
 
+type DatastoreBoxCollection interface {
+	Create(ctx context.Context, params *BoxCollection) (*BoxCollection, error)
+	FindByID(ctx context.Context, id *string) (*BoxCollection, error)
+	List(ctx context.Context) ([]*BoxCollection, error)
+	Update(ctx context.Context, params *BoxCollection) (*BoxCollection, error)
+	Delete(ctx context.Context, params *string) error
+}
+
 type DatastoreBorrower interface {
 	Create(ctx context.Context, params *Borrower) (*Borrower, error)
 	FindByID(ctx context.Context, id *string) (*Borrower, error)

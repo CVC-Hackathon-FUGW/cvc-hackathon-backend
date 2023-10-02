@@ -74,6 +74,10 @@ var (
 	dsParticipants *datastore.DatastoreParticipantMG
 	participantc   controllers.ParticipantController
 
+	boxCollections   *mongo.Collection
+	dsBoxCollections *datastore.DatastoreBoxCollectionMG
+	boxCollectionc   controllers.BoxCollectionController
+
 	mongoclient *mongo.Client
 	err         error
 )
@@ -113,6 +117,7 @@ func init() {
 	projects = mongoclient.Database("hackathon").Collection("projects")
 	packages = mongoclient.Database("hackathon").Collection("packages")
 	participants = mongoclient.Database("hackathon").Collection("participants")
+	boxCollections = mongoclient.Database("hackathon").Collection("boxCollections")
 
 	dspools = datastore.NewDatastorePoolMG(pools, loans)
 	dsloans = datastore.NewDatastoreLoanMG(loans)
@@ -126,6 +131,7 @@ func init() {
 	dsProjects = datastore.NewDatastoreProjectMG(projects)
 	dsPackages = datastore.NewDatastorePackageMG(packages)
 	dsParticipants = datastore.NewDatastoreParticipantMG(participants)
+	dsBoxCollections = datastore.NewDatastoreBoxCollectionMG(boxCollections)
 
 	ps := services.NewPoolService(ctx, dspools)
 	pc = controllers.NewPool(*ps)
@@ -162,6 +168,9 @@ func init() {
 
 	participantService := services.NewParticipantService(ctx, dsParticipants, dsProjects)
 	participantc = controllers.NewParticipantController(*participantService)
+
+	boxCollectionService := services.NewBoxCollectionService(ctx, dsBoxCollections)
+	boxCollectionc = controllers.NewBoxCollectionController(*boxCollectionService)
 }
 
 func main() {
@@ -185,6 +194,7 @@ func main() {
 	projectc.RegisterRoutes(basepath)
 	packagec.RegisterRoutes(basepath)
 	participantc.RegisterRoutes(basepath)
+	boxCollectionc.RegisterRoutes(basepath)
 
 	log.Fatal(server.Run())
 }
