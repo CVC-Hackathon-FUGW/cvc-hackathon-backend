@@ -91,3 +91,9 @@ func (p *ParticipantService) Invest(params *models.Participant) error {
 
 	return nil
 }
+
+func (p *ParticipantService) FindByAddress(participantAddress *string) ([]*models.Participant, error) {
+	ctx := p.ctx
+	items, err := p.datastoreParticipant.FindByAddress(ctx, participantAddress)
+	return items, err
+}

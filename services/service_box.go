@@ -66,3 +66,9 @@ func (b *BoxService) Delete(id *string) error {
 	err := b.datastoreBox.Delete(ctx, id)
 	return err
 }
+
+func (b *BoxService) FindByAddress(boxAddress *string) ([]*models.Box, error) {
+	ctx := b.ctx
+	items, err := b.datastoreBox.FindByAddress(ctx, boxAddress)
+	return items, err
+}

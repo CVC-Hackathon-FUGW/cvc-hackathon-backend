@@ -40,6 +40,7 @@ type DatastoreBox interface {
 	List(ctx context.Context) ([]*Box, error)
 	Update(ctx context.Context, params *Box) (*Box, error)
 	Delete(ctx context.Context, params *string) error
+	FindByAddress(ctx context.Context, boxAddress *string) ([]*Box, error)
 }
 
 type DatastoreProject interface {
@@ -56,6 +57,7 @@ type DatastorePackage interface {
 	List(ctx context.Context) ([]*Package, error)
 	Update(ctx context.Context, params *Package) (*Package, error)
 	Delete(ctx context.Context, params *string) error
+	FindByAddress(ctx context.Context, projectAddress *string) ([]*Package, error)
 }
 
 type DatastoreParticipant interface {
@@ -64,6 +66,7 @@ type DatastoreParticipant interface {
 	List(ctx context.Context) ([]*Participant, error)
 	Update(ctx context.Context, params *Participant) (*Participant, error)
 	Delete(ctx context.Context, params *string) error
+	FindByAddress(ctx context.Context, participantAddress *string) ([]*Participant, error)
 }
 
 type DatastoreBoxCollection interface {

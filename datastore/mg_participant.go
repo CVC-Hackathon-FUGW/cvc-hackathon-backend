@@ -138,3 +138,31 @@ func (ds DatastoreParticipantMG) Delete(ctx context.Context, id *string) error {
 	}
 	return nil
 }
+
+func (ds DatastoreParticipantMG) FindByAddress(ctx context.Context, participantAddress *string) ([]*models.Participant, error) {
+	filter := bson.D{{Key: "participant_address", Value: participantAddress}}
+
+	var participants []*models.Participant
+	cursor, err := ds.participantCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		var participant models.Participant
+		err := cursor.Decode(&participant)
+		if err != nil {
+			return nil, err
+		}
+		if participant.IsActive == true {
+			participants = append(participants, &participant)
+		}
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	return participants, nil
+}

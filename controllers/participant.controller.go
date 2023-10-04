@@ -93,6 +93,16 @@ func (uc *ParticipantController) Invest(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
+func (uc *ParticipantController) FindByAddress(ctx *gin.Context) {
+	var address string = ctx.Param("address")
+	participants, err := uc.ParticipantService.FindByAddress(&address)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, participants)
+}
+
 func (uc *ParticipantController) RegisterRoutes(router *gin.RouterGroup) {
 	router.POST("/participant", uc.CreateParticipant)
 	router.GET("/participant/:id", uc.GetParticipant)
@@ -100,4 +110,5 @@ func (uc *ParticipantController) RegisterRoutes(router *gin.RouterGroup) {
 	router.PATCH("/participant", uc.UpdateParticipant)
 	router.DELETE("/participant/:id", uc.DeleteParticipant)
 	router.POST("/participant/invest", uc.Invest)
+	router.POST("/participant/address/:address", uc.FindByAddress)
 }

@@ -76,10 +76,21 @@ func (uc *PackageController) DeletePackage(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
+func (uc *PackageController) FindByAddress(ctx *gin.Context) {
+	var address string = ctx.Param("address")
+	pkgs, err := uc.PackageService.FindByAddress(&address)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, pkgs)
+}
+
 func (uc *PackageController) RegisterRoutes(r *gin.RouterGroup) {
 	r.POST("/package", uc.CreatePackage)
 	r.GET("/package/:id", uc.GetPackage)
 	r.GET("/package", uc.List)
 	r.PATCH("/package", uc.UpdatePackage)
 	r.DELETE("/package/:id", uc.DeletePackage)
+	r.GET("/package/address/:address", uc.FindByAddress)
 }

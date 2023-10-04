@@ -145,3 +145,31 @@ func (ds DatastorePackageMG) Delete(ctx context.Context, id *string) error {
 	}
 	return nil
 }
+
+func (ds DatastorePackageMG) FindByAddress(ctx context.Context, projectAddress *string) ([]*models.Package, error) {
+	filter := bson.D{{Key: "project_address", Value: projectAddress}}
+
+	var pkgs []*models.Package
+	cursor, err := ds.packageCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		var pkg models.Package
+		err := cursor.Decode(&pkg)
+		if err != nil {
+			return nil, err
+		}
+		if pkg.IsActive == true {
+			pkgs = append(pkgs, &pkg)
+		}
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	return pkgs, nil
+}

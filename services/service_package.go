@@ -57,3 +57,9 @@ func (p *PackageService) Delete(id *string) error {
 	err := p.datastorePackage.Delete(ctx, id)
 	return err
 }
+
+func (p *PackageService) FindByAddress(projectAddress *string) ([]*models.Package, error) {
+	ctx := p.ctx
+	items, err := p.datastorePackage.FindByAddress(ctx, projectAddress)
+	return items, err
+}

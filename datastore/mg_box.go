@@ -136,3 +136,31 @@ func (ds DatastoreBoxMG) Delete(ctx context.Context, id *string) error {
 	}
 	return nil
 }
+
+func (ds DatastoreBoxMG) FindByAddress(ctx context.Context, boxAddress *string) ([]*models.Box, error) {
+	filter := bson.D{{Key: "box_address", Value: boxAddress}}
+
+	var boxes []*models.Box
+	cursor, err := ds.boxCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(ctx) {
+		var box models.Box
+		err := cursor.Decode(&box)
+		if err != nil {
+			return nil, err
+		}
+		if box.IsActive == true {
+			boxes = append(boxes, &box)
+		}
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+
+	cursor.Close(ctx)
+
+	return boxes, nil
+}

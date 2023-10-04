@@ -76,10 +76,21 @@ func (uc *BoxController) DeleteBox(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
+func (uc *BoxController) FindByAddress(ctx *gin.Context) {
+	var address string = ctx.Param("address")
+	boxes, err := uc.BoxService.FindByAddress(&address)
+	if err != nil {
+		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, boxes)
+}
+
 func (uc *BoxController) RegisterRoutes(router *gin.RouterGroup) {
 	router.POST("/box", uc.CreateBox)
 	router.GET("/box/:id", uc.GetBox)
 	router.GET("/box", uc.List)
 	router.PATCH("/box", uc.UpdateBox)
 	router.DELETE("/box/:id", uc.DeleteBox)
+	router.GET("/box/address/:address", uc.FindByAddress)
 }
