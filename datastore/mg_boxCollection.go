@@ -90,10 +90,15 @@ func (ds DatastoreBoxCollectionMG) Update(ctx context.Context, params *models.Bo
 		boxCollection.Image = params.Image
 	}
 
+	if params.OriginAddress != nil {
+		boxCollection.OriginAddress = params.OriginAddress
+	}
+
 	filter := bson.D{primitive.E{Key: "box_collection_id", Value: params.BoxCollectionId}}
 	update := bson.D{primitive.E{Key: "$set", Value: bson.D{
 		primitive.E{Key: "box_collection_address", Value: boxCollection.BoxCollectionAddress},
 		primitive.E{Key: "image", Value: boxCollection.Image},
+		primitive.E{Key: "origin_address", Value: boxCollection.OriginAddress},
 	}}}
 
 	var updatedBoxCollection *models.BoxCollection
