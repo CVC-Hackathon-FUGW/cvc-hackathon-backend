@@ -26,8 +26,15 @@ func (ds DatastoreBoxMG) Create(ctx context.Context, params *models.Box) (*model
 		return nil, err
 	}
 
+	count2, err := ds.boxCollection.CountDocuments(ctx, bson.D{{"box_address", params.BoxAddress}})
+	if err != nil {
+		return nil, err
+	}
+
 	params.IsActive = true
 	params.BoxId = int(count) + 1
+
+	params.TokenId = int(count2) + 1
 
 	_, err = ds.boxCollection.InsertOne(ctx, params)
 	if err != nil {
@@ -98,10 +105,6 @@ func (ds DatastoreBoxMG) Update(ctx context.Context, params *models.Box) (*model
 
 	if params.Owner != nil {
 		box.Owner = params.Owner
-	}
-
-	if params.TokenId != nil {
-		box.TokenId = params.TokenId
 	}
 
 	filter := bson.D{primitive.E{Key: "box_id", Value: params.BoxId}}
