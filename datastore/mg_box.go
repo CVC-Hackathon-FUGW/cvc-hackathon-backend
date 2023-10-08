@@ -100,12 +100,17 @@ func (ds DatastoreBoxMG) Update(ctx context.Context, params *models.Box) (*model
 		box.Owner = params.Owner
 	}
 
+	if params.TokenId != nil {
+		box.TokenId = params.TokenId
+	}
+
 	filter := bson.D{primitive.E{Key: "box_id", Value: params.BoxId}}
 	update := bson.D{primitive.E{Key: "$set", Value: bson.D{
 		primitive.E{Key: "box_address", Value: box.BoxAddress},
 		primitive.E{Key: "box_price", Value: box.BoxPrice},
 		primitive.E{Key: "is_opened", Value: box.IsOpened},
 		primitive.E{Key: "owner", Value: box.Owner},
+		primitive.E{Key: "token_id", Value: box.TokenId},
 	}}}
 
 	var updatedBox *models.Box
