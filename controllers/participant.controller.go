@@ -110,5 +110,5 @@ func (uc *ParticipantController) RegisterRoutes(router *gin.RouterGroup) {
 	router.PATCH("/participant", uc.UpdateParticipant)
 	router.DELETE("/participant/:id", uc.DeleteParticipant)
 	router.POST("/participant/invest", uc.Invest)
-	router.POST("/participant/address/:address", uc.FindByAddress)
+	router.GET("/participant/address/:address", uc.FindByAddress)
 }
